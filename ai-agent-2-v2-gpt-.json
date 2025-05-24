@@ -1,0 +1,220 @@
+{
+  "createdAt": "2025-05-22T09:08:15.725Z",
+  "updatedAt": "2025-05-22T10:50:53.618Z",
+  "id": "rFx3U1bQLZ61dZks",
+  "name": "ai agent 2 v2 gpt",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agentic-ai-2-paging",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        -20
+      ],
+      "id": "df004e70-4ef1-47ae-a1f7-cafade7fcc3d",
+      "name": "Webhook",
+      "webhookId": "e43e8bfb-c727-475c-8f0f-7a50e16b1772"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil parameter paging dan tanggal dari input webhook\nconst inputDate = $input.first().json.body.date; // format: 'YYYY-MM-DD'\nif (!inputDate) throw new Error('Tanggal tidak ditemukan di input JSON.');\n\nconst page = $input.first().json.body.page ? Number($input.first().json.body.page) : 1;\nconst limit = $input.first().json.body.limit ? Number($input.first().json.body.limit) : 5000;\nconst offset = (page - 1) * limit;\n\nconst today = new Date(inputDate);\nconst dateFormat = (date) => date.toISOString().split('T')[0];\n\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\nreturn [{\n  json: {\n    today: dateFormat(today),\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday),\n    page,\n    limit,\n    offset\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        -20
+      ],
+      "id": "992b40a7-ee66-4fa7-8c83-2d4d635ade07",
+      "name": "Function Paging"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT name, SUM(quantity_sold) AS total_sold_3days, AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $json.startDate }}' AND date <= '{{ $json.endDate }}'\nGROUP BY name\nORDER BY name\nLIMIT {{ $json.limit }}\nOFFSET {{ $json.offset }};",
+        "options": {}
+      },
+      "name": "Postgres Sales",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "b44b3afd-9bac-4807-8713-bfde504e9ff0",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT index, name, stock\nFROM amazon_dataset\nORDER BY name\nLIMIT {{ $json.limit }}\nOFFSET {{ $json.offset }};",
+        "options": {}
+      },
+      "name": "Postgres Product",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        0,
+        100
+      ],
+      "id": "4a1b2510-2f70-4f05-ad8d-6c5f5f724c5e",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "name",
+              "field2": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Merge By Name",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        200,
+        -20
+      ],
+      "id": "9c204fb2-0530-4c9f-9b85-6ab583f06372"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil semua data dari node Postgres Sales dan Postgres Product\nconst salesAll = $('Postgres Sales').all().map(i => i.json);\nconst productsAll = $('Postgres Product').all().map(i => i.json);\n\nconst output = [];\n\nfor (const product of productsAll) {\n  // Cari data sales yang cocok berdasarkan name\n  const matchedSales = salesAll.find(sale => sale.name === product.name) || {};\n\n  const stock = product.stock !== undefined ? Number(product.stock) : 0;\n  const avgDailySold = matchedSales.avg_daily_sold_3days !== undefined ? Number(matchedSales.avg_daily_sold_3days) : 0;\n\n  const predictedStock = stock - (avgDailySold * 3);\n\n  output.push({\n    json: {\n      name: product.name || '-',\n      stock: stock,\n      avg_daily_sold_3days: avgDailySold,\n      predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n      status: predictedStock > 0 ? 'cukup' : 'kurang'\n    }\n  });\n}\n\nreturn output;\n"
+      },
+      "name": "Prediksi Stok",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        -20
+      ],
+      "id": "20f260d6-f120-441b-b596-af39a345f122"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        -20
+      ],
+      "id": "1e6d1b62-5e8e-45f3-9433-ece0b6003bf1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Function Paging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function Paging": {
+      "main": [
+        [
+          {
+            "node": "Postgres Sales",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Sales": {
+      "main": [
+        [
+          {
+            "node": "Merge By Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Product": {
+      "main": [
+        [
+          {
+            "node": "Merge By Name",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge By Name": {
+      "main": [
+        [
+          {
+            "node": "Prediksi Stok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prediksi Stok": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "92b4bf40-1bb5-447f-a08d-fa7ef55dcb16",
+  "triggerCount": 0,
+  "tags": []
+}
