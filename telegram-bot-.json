@@ -1,0 +1,197 @@
+{
+  "createdAt": "2025-05-15T04:50:56.997Z",
+  "updatedAt": "2025-05-24T10:30:37.150Z",
+  "id": "zsxtDMRXfEMt9UDZ",
+  "name": "telegram bot",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "766f99a6-09dc-45db-bdd8-e9afd95356e7",
+      "name": "Telegram Trigger",
+      "webhookId": "520bb7ee-7e3e-4248-952e-ef45f6e6e972",
+      "credentials": {
+        "telegramApi": {
+          "id": "sXDiFvbVbjCf9wMC",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        220,
+        0
+      ],
+      "id": "69e77250-6d26-4a94-b6a1-cfd27200c195",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "buat-maen2-aja",
+          "mode": "list",
+          "cachedResultName": "buat maen2 aja"
+        },
+        "modelName": "gemini-2.0-flash",
+        "options": {
+          "safetySettings": {
+            "values": [
+              {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_NONE"
+              },
+              {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "threshold": "BLOCK_NONE"
+              },
+              {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_NONE"
+              },
+              {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_NONE"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        120,
+        200
+      ],
+      "id": "f26df434-f4c7-4513-a092-05d0e46e151f",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "frIS2sQR5bxxzXkA",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.text }}",
+        "databaseName": "n8n_chat"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1,
+      "position": [
+        280,
+        200
+      ],
+      "id": "2386ea34-b540-4b14-b060-35afc205c1ad",
+      "name": "MongoDB Chat Memory",
+      "credentials": {
+        "mongoDb": {
+          "id": "X7jERhUja8dfCZPE",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        0
+      ],
+      "id": "aa5cc333-fb99-4e3c-b10f-597e78b351e1",
+      "name": "Telegram",
+      "webhookId": "38dd128e-4fe1-42fe-b98a-a08abc03c9a1",
+      "credentials": {
+        "telegramApi": {
+          "id": "sXDiFvbVbjCf9wMC",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d968c5c7-ae36-4566-9f7b-275e90570058",
+  "triggerCount": 1,
+  "tags": []
+}
