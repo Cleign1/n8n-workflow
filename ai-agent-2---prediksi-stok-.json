@@ -1,0 +1,91 @@
+{
+  "createdAt": "2025-05-21T13:52:32.509Z",
+  "updatedAt": "2025-05-24T10:29:01.705Z",
+  "id": "82ePWQtrtP50cwa7",
+  "name": "ai agent 2 - prediksi stok",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        -80
+      ],
+      "id": "6bb79b8c-0981-4489-bcaa-f1f2f0d810c3",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  p.index, \n  p.name, \n  p.stock, \n  json_agg(json_build_object('date', s.date, 'quantity_sold', s.quantity_sold) ORDER BY s.date) AS sales\nFROM products p\nLEFT JOIN daily_sales s ON p.index = s.index AND s.date >= CURRENT_DATE - INTERVAL '2 days'\nGROUP BY p.index, p.name, p.stock\nORDER BY p.index\nLIMIT 100; -- batasi dulu untuk tes, bisa dihapus atau dinaikkan sesuai kebutuhan\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -140,
+        -80
+      ],
+      "id": "1046dd7a-21d4-4440-89cf-87caf9269d1c",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import pandas as pd\n\noutput = []\n\nfor item in items:\n    index = item['json']['index']\n    name = item['json']['name']\n    stock = item['json']['stock']\n    sales = item['json'].get('sales', [])\n    \n    df_sales = pd.DataFrame(sales)\n    if not df_sales.empty:\n        df_sales['quantity_sold'] = pd.to_numeric(df_sales['quantity_sold'])\n        df_sales = df_sales.sort_values('date')\n        df_sales['moving_avg_3days'] = df_sales['quantity_sold'].rolling(window=3, min_periods=1).mean()\n        pred_avg_daily_sale = df_sales['moving_avg_3days'].iloc[-1]\n    else:\n        pred_avg_daily_sale = 0\n\n    pred_need_3days = pred_avg_daily_sale * 3\n    is_stock_enough = stock >= pred_need_3days\n    \n    output.append({\n        'index': index,\n        'name': name,\n        'stock': stock,\n        'pred_avg_daily_sale': round(pred_avg_daily_sale, 2),\n        'pred_need_3days': round(pred_need_3days, 2),\n        'is_stock_enough': is_stock_enough\n    })\n\nreturn [{'json': o} for o in output]\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -80
+      ],
+      "id": "5f05012d-028e-4212-a2c2-a722a41c17c9",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a1510565-a215-4264-a696-b5c8e8cf0840",
+  "triggerCount": 0,
+  "tags": []
+}
