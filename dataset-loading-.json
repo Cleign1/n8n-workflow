@@ -1,0 +1,163 @@
+{
+  "createdAt": "2025-05-12T05:34:42.650Z",
+  "updatedAt": "2025-05-24T10:30:45.901Z",
+  "id": "jlSFF3Yt2yBkCbfq",
+  "name": "dataset loading",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a27373d6-b71b-4878-a996-587968ad9e94",
+      "name": "When chat message received",
+      "webhookId": "c957daf9-382d-4845-a4a3-033f8af239b7"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        220,
+        0
+      ],
+      "id": "0e6482d1-417c-47ec-84bf-84b7206953a9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        120,
+        240
+      ],
+      "id": "5eb2daff-08b9-4f83-bfef-4aa71d99a44c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ph2XhABiK1VUeOmK",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1,
+      "position": [
+        260,
+        240
+      ],
+      "id": "53ab84f2-041a-4899-8d1a-da00b683eb48",
+      "name": "MongoDB Chat Memory",
+      "credentials": {
+        "mongoDb": {
+          "id": "X7jERhUja8dfCZPE",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "amazon_product",
+          "mode": "list",
+          "cachedResultName": "amazon_product"
+        },
+        "limit": 100,
+        "combineConditions": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        380,
+        240
+      ],
+      "id": "cd521c89-fd59-477c-9fd2-9b181eb5024b",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d06f5021-0cef-4ae3-8c32-8e12317a1fc9",
+  "triggerCount": 0,
+  "tags": []
+}
