@@ -1,0 +1,128 @@
+{
+  "createdAt": "2025-05-19T15:51:51.799Z",
+  "updatedAt": "2025-05-24T10:29:24.953Z",
+  "id": "VDDVDsFO23bq0pcD",
+  "name": "My workflow",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -200,
+        0
+      ],
+      "id": "1e69c018-f847-4191-89ce-408bea70a51f",
+      "name": "When chat message received",
+      "webhookId": "60181bd5-6077-4ea0-b0ad-6f2b4f29e29f"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        20,
+        0
+      ],
+      "id": "ba67fa98-e520-4dcd-af8c-d11e421b1e73",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "buat-maen2-aja",
+          "mode": "list",
+          "cachedResultName": "buat maen2 aja"
+        },
+        "modelName": "gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        220
+      ],
+      "id": "3b77cca1-fed0-4659-afd5-47f5cc5423c0",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "frIS2sQR5bxxzXkA",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        220
+      ],
+      "id": "a395d402-d4e6-4cce-8f47-5b1f11e81a85",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "PZXYft7euaufuQXJ",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "e961aab9-f499-40ec-a983-4995775c1161",
+  "triggerCount": 0,
+  "tags": []
+}
