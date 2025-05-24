@@ -1,0 +1,228 @@
+{
+  "createdAt": "2025-05-13T18:13:49.818Z",
+  "updatedAt": "2025-05-24T10:30:48.314Z",
+  "id": "STWM7evZ8lbmVtoQ",
+  "name": "interacting with dataset",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "ab0e821b-f604-4b2f-97ef-a749306efaef",
+      "name": "When chat message received",
+      "webhookId": "07033837-31b6-4dc4-a378-9c2484356292"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a helpful assistant, the user speak indonesian"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -20,
+        0
+      ],
+      "id": "cafe6c2a-77f3-47ea-add4-3bd680c134af",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "databaseName": "n8n_data"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        280
+      ],
+      "id": "e452c16c-3842-4ee2-9910-3a00f78b7811",
+      "name": "MongoDB Chat Memory",
+      "credentials": {
+        "mongoDb": {
+          "id": "X7jERhUja8dfCZPE",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "buat-maen2-aja",
+          "mode": "list",
+          "cachedResultName": "buat maen2 aja"
+        },
+        "modelName": "gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        280
+      ],
+      "id": "95973bca-3c9d-4c5f-9609-c48e8b371232",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "frIS2sQR5bxxzXkA",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Get data from Postgresql",
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "amazon_dataset_cleaned",
+          "mode": "list",
+          "cachedResultName": "amazon_dataset_cleaned"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "main_category",
+              "condition": "LIKE",
+              "value": "={{ $fromAI('kategori', `the main category of the product`, 'string') }}"
+            },
+            {
+              "column": "sub_category",
+              "condition": "LIKE",
+              "value": "={{ $fromAI('sub_kategory', `the sub category of the product if mentioned`, 'string') }}"
+            },
+            {
+              "column": "actual_price",
+              "condition": "<",
+              "value": "={{ $fromAI('harga', `the price mentioned in the message`, 'number') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        100,
+        280
+      ],
+      "id": "979faf3d-d9d1-48b7-87be-613a0fd7305a",
+      "name": "search_product",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Read data from the database",
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) as count FROM amazon_dataset_cleaned",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        -100,
+        280
+      ],
+      "id": "d6446589-5623-492d-97f0-76e973646192",
+      "name": "select_all",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_product": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "select_all": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "bb91d500-2223-40bc-8ab1-0d97c318655b",
+  "triggerCount": 0,
+  "tags": []
+}
