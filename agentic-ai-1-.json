@@ -1,0 +1,264 @@
+{
+  "createdAt": "2025-05-16T14:28:39.192Z",
+  "updatedAt": "2025-05-24T10:30:28.798Z",
+  "id": "LCxtXGBHKaKa5qPV",
+  "name": "agentic ai 1",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "update_stock",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -540,
+        -20
+      ],
+      "id": "764d7738-22ca-440b-aced-69ec5bc63bf1",
+      "name": "Webhook",
+      "webhookId": "3174b96a-8db0-4832-9168-ff4ed760ded1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Data produk dari database PostgreSQL\nconst productsInDatabase = items.map(item => item.json);\n\n// Data penjualan dari webhook\nconst salesData = $('Webhook').first().json.body;\n\nlet updatedProducts = [];\n\nif (Array.isArray(salesData)) {\n  salesData.forEach(sale => {\n    const productInDb = productsInDatabase.find(p => p.name === sale.name);\n    if (productInDb) {\n      const newStock = productInDb.stock - sale.quantity_sold;\n      updatedProducts.push({\n        index: productInDb.index,\n        stock: Math.max(0, newStock),\n      });\n    } else {\n      console.warn(`Produk \"${sale.name}\" tidak ditemukan di database.`);\n    }\n  });\n} else {\n  console.error(\"Data penjualan harus berupa array.\");\n  return [];\n}\n\n// Return array item untuk update PostgreSQL\nreturn updatedProducts.map(product => ({ json: product }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        -20
+      ],
+      "id": "a7077ab6-27ce-45ae-8f1f-b43b20d6c16b",
+      "name": "Code",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "amazon_dataset_cleaned",
+          "mode": "list",
+          "cachedResultName": "amazon_dataset_cleaned"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "index": 0,
+            "ratings": 0,
+            "no_of_ratings": 0,
+            "discount_price": 0,
+            "actual_price": 0,
+            "stock": 0
+          },
+          "matchingColumns": [
+            "index"
+          ],
+          "schema": [
+            {
+              "id": "index",
+              "displayName": "index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "main_category",
+              "displayName": "main_category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sub_category",
+              "displayName": "sub_category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ratings",
+              "displayName": "ratings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "no_of_ratings",
+              "displayName": "no_of_ratings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "discount_price",
+              "displayName": "discount_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "actual_price",
+              "displayName": "actual_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "stock",
+              "displayName": "stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        360,
+        -20
+      ],
+      "id": "ed5fb580-b5f5-44a7-b9ec-8f47cbe1ac2a",
+      "name": "Postgres1",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const salesData = $input.first().json.body;\n\nif (!Array.isArray(salesData)) {\n  console.error(\"Data penjualan harus berupa array.\");\n  return [];\n}\n\n// Dapatkan array nama produk\nconst productNames = salesData.map(sale => sale.name);\n\n// Pastikan hasilnya flat array (bukan nested array)\nreturn [{ json: { productNames } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        -20
+      ],
+      "id": "4ce7ae04-d7b8-4432-992d-a9e111dde7de",
+      "name": "Prepare Product"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM public.amazon_dataset_cleaned\nWHERE name = ANY({{ $json.productNames }})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -100,
+        -20
+      ],
+      "id": "6838bb17-7c5f-4f2d-b2c1-1558c014dbdd",
+      "name": "Get Product Data",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Product": {
+      "main": [
+        [
+          {
+            "node": "Get Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product Data": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "54152722-eb1d-417f-9eaa-2c558d236b12",
+  "triggerCount": 0,
+  "tags": []
+}
