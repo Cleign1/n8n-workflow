@@ -1,0 +1,177 @@
+{
+  "createdAt": "2025-05-22T07:16:28.227Z",
+  "updatedAt": "2025-05-24T10:29:12.081Z",
+  "id": "Vs7n1qwW9wYSwZLf",
+  "name": "ai agent 2 v1 gpt",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agentic-ai-2",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        40,
+        0
+      ],
+      "id": "4aa8e288-af75-4c61-987b-f5c44dde95fc",
+      "name": "Webhook",
+      "webhookId": "a23d0168-32db-41a0-a682-a105fe5a8968"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Default values\nconst page = $input.first().json.body.page ? Number($input.first().json.body.page) : 1;\nconst limit = $input.first().json.body.limit ? Number($input.first().json.body.limit) : 2500;\n\nconst offset = (page - 1) * limit;\n\n// Tanggal tetap sama seperti sebelumnya\nconst inputDate = $input.first().json.body.date; // format: 'YYYY-MM-DD'\nif (!inputDate) throw new Error('Tanggal tidak ditemukan di input JSON.');\nconst today = new Date(inputDate);\nconst dateFormat = (date) => date.toISOString().split('T')[0];\n\n// 3 hari sebelumnya\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\n// 1 hari sebelumnya (kemarin)\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\nreturn [{\n  json: {\n    today: dateFormat(today),\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday),\n    page,\n    limit,\n    offset\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ],
+      "id": "b2c941ba-033f-4efc-8802-5e5cc8f2d889",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        0
+      ],
+      "id": "3336c48f-fedd-4e42-9835-d77db17e351f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  name,\n  SUM(quantity_sold) AS total_sold_3days,\n  AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $json.startDate }}' AND date <= '{{ $json.endDate }}'\nGROUP BY name\nORDER BY name\nLIMIT {{ $json.limit }}\nOFFSET {{ $json.offset }};\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        520,
+        0
+      ],
+      "id": "c0c621fa-7a7d-46ad-a3a5-b13f7d68919b",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  index,\n  name,\n  stock\nFROM amazon_dataset\nORDER BY name\nLIMIT {{ $('Code').item.json.limit }}\nOFFSET {{ $('Code').item.json.offset }};",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        740,
+        0
+      ],
+      "id": "6912748b-a220-43af-a7dc-be913fa15407",
+      "name": "Postgres1",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  // Data hasil merge: Penjualan (daily_sales) dan Produk (amazon_dataset)\n  // Penyesuaian tergantung merge node: biasanya nama property 'Merge1' dan 'Merge2'\n  // Cek nama property hasil merge node kamu, contoh di bawah ini:\n\n  const sales = item.json['Postgres 1'] || item.json['Merge1'] || {};  // hasil query penjualan\n  const product = item.json['Postgres 2'] || item.json['Merge2'] || {}; // hasil query produk\n\n  // Atau jika hasil merge langsung ada di item.json, sesuaikan field:\n  // const sales = item.json;\n  // const product = item.json;\n\n  const stock = product.stock !== undefined ? Number(product.stock) : 0;\n  const avgDailySold = sales.avg_daily_sold_3days !== undefined ? Number(sales.avg_daily_sold_3days) : 0;\n\n  // Prediksi stok setelah 3 hari ke depan\n  const predictedStock = stock - (avgDailySold * 3);\n\n  return {\n    json: {\n      name: product.name || sales.name || '-',\n      stock: stock,\n      avg_daily_sold_3days: avgDailySold,\n      predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n      status: predictedStock > 0 ? 'cukup' : 'kurang'\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "id": "25cd3495-64ae-41a5-909c-4f0561888101",
+      "name": "Code1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "78d417ba-aa39-49c7-a390-8381684e6813",
+  "triggerCount": 0,
+  "tags": []
+}
