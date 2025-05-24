@@ -1,0 +1,230 @@
+{
+  "createdAt": "2025-04-14T15:34:46.120Z",
+  "updatedAt": "2025-05-24T10:28:56.294Z",
+  "id": "sjmgzU6mN4JBJB8z",
+  "name": "Telegram bot chatbot",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f8488e85-8ce2-4d0a-af26-bcec6c0dcae7",
+      "name": "Telegram Trigger",
+      "webhookId": "2a924d02-e938-4d18-b0e5-09592f1138b5",
+      "credentials": {
+        "telegramApi": {
+          "id": "sXDiFvbVbjCf9wMC",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Name :  {{ $json.message.from.first_name }} {{ $json.message.from.last_name }}\nMessage : {{ $json.message.text }}\nChat_id : {{ $json.message.chat.id }}",
+        "options": {
+          "systemMessage": "=You are a helpful assistant, answer consicely and accurately, today is {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        220,
+        0
+      ],
+      "id": "b4e683f1-7cb0-46fd-a207-9c716eb5ca4b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.from.username }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        280,
+        240
+      ],
+      "id": "d85de2a2-2bc1-4341-8e76-3c4332c473f2",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "PZXYft7euaufuQXJ",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        0
+      ],
+      "id": "411ab031-0f35-42db-a5dd-4363746df8fa",
+      "name": "Telegram",
+      "webhookId": "4cf4d5ad-405c-4da4-8186-27ab0eacbbc5",
+      "credentials": {
+        "telegramApi": {
+          "id": "sXDiFvbVbjCf9wMC",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "buat-maen2-aja",
+          "mode": "list",
+          "cachedResultName": "buat maen2 aja"
+        },
+        "modelName": "gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        120,
+        200
+      ],
+      "id": "c97ef87d-42d3-41e1-95a4-f00033bd873a",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "frIS2sQR5bxxzXkA",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1SEWF5yy4L08BqijWTQ4yaFDhi9pclVQrHISWAY8BD8E",
+          "mode": "list",
+          "cachedResultName": "amazon_dataset_cleaned",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SEWF5yy4L08BqijWTQ4yaFDhi9pclVQrHISWAY8BD8E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 236622789,
+          "mode": "list",
+          "cachedResultName": "Amazon_dataset_cleaned",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SEWF5yy4L08BqijWTQ4yaFDhi9pclVQrHISWAY8BD8E/edit#gid=236622789"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "name",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        480,
+        220
+      ],
+      "id": "a4e14701-76d4-4580-a912-7f258e71f7ab",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "frIS2sQR5bxxzXkA",
+          "name": "Google Service Account account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d067f220-def4-490e-a229-99a1da9ba7cc",
+  "triggerCount": 1,
+  "tags": []
+}
