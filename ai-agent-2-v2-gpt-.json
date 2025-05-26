@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-22T09:08:15.725Z",
-  "updatedAt": "2025-05-22T10:50:53.618Z",
+  "updatedAt": "2025-05-26T15:43:31.564Z",
   "id": "rFx3U1bQLZ61dZks",
   "name": "ai agent 2 v2 gpt",
   "active": false,
@@ -16,7 +16,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -360,
+        -440,
         -20
       ],
       "id": "df004e70-4ef1-47ae-a1f7-cafade7fcc3d",
@@ -30,7 +30,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -180,
+        -200,
         -20
       ],
       "id": "992b40a7-ee66-4fa7-8c83-2d4d635ade07",
@@ -214,7 +214,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "92b4bf40-1bb5-447f-a08d-fa7ef55dcb16",
+  "versionId": "347f95f8-376e-4a76-95ef-f124a2a51ed8",
   "triggerCount": 0,
   "tags": []
 }
