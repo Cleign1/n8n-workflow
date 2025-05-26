@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-16T16:02:06.339Z",
-  "updatedAt": "2025-05-26T16:48:33.835Z",
+  "updatedAt": "2025-05-26T16:50:53.358Z",
   "id": "ftWJTf9JuzrOpA0C",
   "name": "ai agents 1_update-stok-and-insert-daily-sales",
   "active": false,
@@ -233,7 +233,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        520,
+        540,
         240
       ],
       "id": "fb90578f-1f21-4a0f-984c-590bf0925ee8",
@@ -252,11 +252,6 @@
         [
           {
             "node": "Batch Process",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Insert Daily Sales",
             "type": "main",
             "index": 0
           }
@@ -314,6 +309,11 @@
             "node": "Prepare Product",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Insert Daily Sales",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -338,7 +338,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c8e7f9e6-909c-4cbc-a123-ff7cc01deee8",
+  "versionId": "efb6bab8-2737-487a-a7d7-2940efcec589",
   "triggerCount": 1,
   "tags": []
 }
