@@ -1,0 +1,344 @@
+{
+  "createdAt": "2025-05-16T16:02:06.339Z",
+  "updatedAt": "2025-05-26T16:48:33.835Z",
+  "id": "ftWJTf9JuzrOpA0C",
+  "name": "ai agents 1_update-stok-and-insert-daily-sales",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "update_stock",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "034c1443-f25b-45df-b3ed-7076ad3714e8",
+      "name": "Webhook",
+      "webhookId": "3174b96a-8db0-4832-9168-ff4ed760ded1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const salesData = $('Webhook').first().json.body;\n\nif (!Array.isArray(salesData)) {\n  console.error(\"Data penjualan harus berupa array.\");\n  return [];\n}\n\n// Dapatkan array nama produk\nconst productNames = salesData.map(sale => sale.name);\n\nreturn [{ json: { productNames } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "d35158e5-2e8d-48af-9b14-8296746accc8",
+      "name": "Prepare Product",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM public.amazon_dataset\nWHERE name IN ({{ $json.productNames.map(name => `'${name.replace(/'/g, \"''\")}'`).join(', ') }})\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        540,
+        0
+      ],
+      "id": "bda5b5ca-d8f6-4cbf-85f3-c276656dcc46",
+      "name": "Get Product Data",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Data produk dari database PostgreSQL\nconst productsInDatabase = items.map(item => item.json);\n\n// Data penjualan dari webhook\nconst salesData = $('Webhook').first().json.body;\n\nlet updatedProducts = [];\n\nif (Array.isArray(salesData)) {\n  salesData.forEach(sale => {\n    const productInDb = productsInDatabase.find(p => p.name === sale.name);\n    if (productInDb) {\n      const newStock = productInDb.stock - sale.quantity_sold;\n      updatedProducts.push({\n        index: productInDb.index,\n        stock: Math.max(0, newStock),\n      });\n    } else {\n      console.warn(`Produk \"${sale.name}\" tidak ditemukan di database.`);\n    }\n  });\n} else {\n  console.error(\"Data penjualan harus berupa array.\");\n  return [];\n}\n\n// Return array item untuk update PostgreSQL\nreturn updatedProducts.map(product => ({ json: product }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        0
+      ],
+      "id": "1976677b-9679-4c93-b7f8-78afd7f0a787",
+      "name": "Sort Produk",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "amazon_dataset",
+          "mode": "list",
+          "cachedResultName": "amazon_dataset"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "index"
+          ],
+          "schema": [
+            {
+              "id": "index",
+              "displayName": "index",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "main_category",
+              "displayName": "main_category",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sub_category",
+              "displayName": "sub_category",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ratings",
+              "displayName": "ratings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "no_of_ratings",
+              "displayName": "no_of_ratings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "discount_price_idr",
+              "displayName": "discount_price_idr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "actual_price_idr",
+              "displayName": "actual_price_idr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "stock",
+              "displayName": "stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        980,
+        0
+      ],
+      "id": "800a4603-d4a1-476d-a508-a673b7d05075",
+      "name": "Update Produk Database",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"Success\": \"Berhasil\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        1560,
+        0
+      ],
+      "id": "b3d96f10-9b90-4c1d-afa2-bbbe6c1a0ba5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "/* Proses seluruh batch sekaligus */\nconst batchData = $input.first().json.body.map(item => item.json);\n\n// Contoh: log jumlah data batch\nconsole.log(`Terima batch data berjumlah: ${batchData.length}`);\n\n// Bisa di sini kamu proses batchData, misal simpan ke DB, panggil API, dsb.\n\n// Kembalikan response untuk node selanjutnya\nreturn [{ json: { message: `Batch diproses dengan total ${batchData.length} item` },  }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        40,
+        0
+      ],
+      "id": "c907fa2c-923d-4220-a8aa-f375e634c577",
+      "name": "Batch Process"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO public.daily_sales (index, name, date, quantity_sold)\nVALUES\n{{ $('Webhook').item.json.body.map(sale => `(${sale.index}, '${sale.name.replace(/'/g, \"''\")}', '${sale.date}', ${sale.quantity_sold})`).join(\", \") }}\nON CONFLICT DO NOTHING\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        520,
+        240
+      ],
+      "id": "fb90578f-1f21-4a0f-984c-590bf0925ee8",
+      "name": "Insert Daily Sales",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Batch Process",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Daily Sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Product": {
+      "main": [
+        [
+          {
+            "node": "Get Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product Data": {
+      "main": [
+        [
+          {
+            "node": "Sort Produk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort Produk": {
+      "main": [
+        [
+          {
+            "node": "Update Produk Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Produk Database": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Process": {
+      "main": [
+        [
+          {
+            "node": "Prepare Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Daily Sales": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c8e7f9e6-909c-4cbc-a123-ff7cc01deee8",
+  "triggerCount": 1,
+  "tags": []
+}
