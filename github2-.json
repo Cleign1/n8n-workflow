@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-05-24T10:26:44.239Z",
-  "updatedAt": "2025-05-24T10:31:48.397Z",
+  "updatedAt": "2025-05-24T12:33:48.718Z",
   "id": "nIsor8VC4UdvcTML",
   "name": "github2",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -263,7 +263,7 @@
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        240,
+        260,
         -180
       ],
       "typeVersion": 1
@@ -449,7 +449,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "1caaba0f-882f-439b-a51f-c1a1553d96e4",
-  "triggerCount": 0,
+  "versionId": "df1f8a76-e25f-49f1-a047-e3d3c092417f",
+  "triggerCount": 1,
   "tags": []
 }
