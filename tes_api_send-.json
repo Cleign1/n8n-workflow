@@ -1,0 +1,92 @@
+{
+  "createdAt": "2025-05-26T14:56:26.999Z",
+  "updatedAt": "2025-05-26T15:30:36.676Z",
+  "id": "f1a4yn1FYTiqupdU",
+  "name": "tes_api_send",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"Response\": \"Success\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        -80
+      ],
+      "id": "ec1861e5-a0e2-40e6-95e7-99231e1c9340",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "/* Proses seluruh batch sekaligus */\nconst batchData = $input.first().json.body.map(item => item.json);\n\n// Contoh: log jumlah data batch\nconsole.log(`Terima batch data berjumlah: ${batchData.length}`);\n\n// Bisa di sini kamu proses batchData, misal simpan ke DB, panggil API, dsb.\n\n// Kembalikan response untuk node selanjutnya\nreturn [{ json: { message: `Batch diproses dengan total ${batchData.length} item` } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        -80
+      ],
+      "id": "a88ee17e-0552-4f1d-8eb2-493ed197adfa",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "testing-send-api",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        -80
+      ],
+      "id": "d1c79449-d101-4867-8424-e3f2d80107d5",
+      "name": "Webhook",
+      "webhookId": "4c766b98-4d44-445a-8b10-5079cc81c7a7"
+    }
+  ],
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3f6814dc-b5a0-4205-9821-e2ac318e46b6",
+  "triggerCount": 1,
+  "tags": []
+}
