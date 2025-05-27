@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-05-16T16:02:06.339Z",
-  "updatedAt": "2025-05-26T17:29:13.203Z",
+  "updatedAt": "2025-05-27T16:41:47.473Z",
   "id": "ftWJTf9JuzrOpA0C",
   "name": "ai agents 1_update-stok-and-insert-daily-sales",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -25,12 +25,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const salesData = $('Webhook').first().json.body;\n\nif (!Array.isArray(salesData)) {\n  console.error(\"Data penjualan harus berupa array.\");\n  return [];\n}\n\n// Dapatkan array nama produk\nconst productNames = salesData.map(sale => sale.name);\n\nreturn [{ json: { productNames } }];"
+        "jsCode": "const salesData = $('Webhook').first().json.body;\n\nif (!Array.isArray(salesData)) {\n  console.error(\"Data penjualan harus berupa array.\");\n  return [];\n}\n\n// Dapatkan array index produk dari data penjualan\nconst productIndexes = salesData.map(sale => sale.index);\n\nreturn [{ json: { productIndexes } }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        320,
+        20,
         0
       ],
       "id": "d35158e5-2e8d-48af-9b14-8296746accc8",
@@ -40,13 +40,13 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM public.amazon_dataset\nWHERE name IN ({{ $json.productNames.map(name => `'${name.replace(/'/g, \"''\")}'`).join(', ') }})\n",
+        "query": "SELECT * FROM public.amazon_dataset\nWHERE index IN ({{ $json.productIndexes.join(', ') }})\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        540,
+        280,
         0
       ],
       "id": "bda5b5ca-d8f6-4cbf-85f3-c276656dcc46",
@@ -65,7 +65,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        760,
+        500,
         0
       ],
       "id": "1976677b-9679-4c93-b7f8-78afd7f0a787",
@@ -184,7 +184,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        980,
+        740,
         0
       ],
       "id": "800a4603-d4a1-476d-a508-a673b7d05075",
@@ -205,45 +205,11 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.2,
       "position": [
-        1560,
+        1040,
         0
       ],
       "id": "b3d96f10-9b90-4c1d-afa2-bbbe6c1a0ba5",
       "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
-        "jsCode": "/* Proses seluruh batch sekaligus */\nconst batchData = $input.first().json.body.map(item => item.json);\n\n// Contoh: log jumlah data batch\nconsole.log(`Terima batch data berjumlah: ${batchData.length}`);\n\n// Bisa di sini kamu proses batchData, misal simpan ke DB, panggil API, dsb.\n\n// Kembalikan response untuk node selanjutnya\nreturn [{ json: { message: `Batch diproses dengan total ${batchData.length} item` },  }];\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        40,
-        0
-      ],
-      "id": "c907fa2c-923d-4220-a8aa-f375e634c577",
-      "name": "Batch Process"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO public.daily_sales (index, name, date, quantity_sold)\nVALUES\n{{ $('Webhook').item.json.body.map(sale => `(${sale.index}, '${sale.name.replace(/'/g, \"''\")}', '${sale.date}', ${sale.quantity_sold})`).join(\", \") }}\nON CONFLICT DO NOTHING\n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        540,
-        240
-      ],
-      "id": "fb90578f-1f21-4a0f-984c-590bf0925ee8",
-      "name": "Insert Daily Sales",
-      "credentials": {
-        "postgres": {
-          "id": "ufLqaq0vJt3QUgxO",
-          "name": "Postgres account 2"
-        }
-      }
     }
   ],
   "connections": {
@@ -251,7 +217,7 @@
       "main": [
         [
           {
-            "node": "Batch Process",
+            "node": "Prepare Product",
             "type": "main",
             "index": 0
           }
@@ -301,33 +267,6 @@
           }
         ]
       ]
-    },
-    "Batch Process": {
-      "main": [
-        [
-          {
-            "node": "Prepare Product",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Insert Daily Sales",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Insert Daily Sales": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
@@ -338,7 +277,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "efb6bab8-2737-487a-a7d7-2940efcec589",
+  "versionId": "25c504da-87b1-47b3-9fe2-0a73b0dca6e7",
   "triggerCount": 1,
   "tags": []
 }
