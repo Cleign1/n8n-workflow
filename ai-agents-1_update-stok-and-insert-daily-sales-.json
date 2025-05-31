@@ -1,9 +1,9 @@
 {
   "createdAt": "2025-05-16T16:02:06.339Z",
-  "updatedAt": "2025-05-27T16:41:47.473Z",
+  "updatedAt": "2025-05-31T09:01:51.791Z",
   "id": "ftWJTf9JuzrOpA0C",
   "name": "ai agents 1_update-stok-and-insert-daily-sales",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -277,7 +277,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "25c504da-87b1-47b3-9fe2-0a73b0dca6e7",
+  "versionId": "4a7d30b3-4efe-4f58-9a50-2e4b806d71fb",
   "triggerCount": 1,
   "tags": []
 }
