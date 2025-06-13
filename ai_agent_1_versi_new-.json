@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-31T07:58:49.584Z",
-  "updatedAt": "2025-06-11T08:36:56.720Z",
+  "updatedAt": "2025-06-13T16:19:27.303Z",
   "id": "ZUWI4WKB1w7PNOQB",
   "name": "ai_agent_1_versi_new",
   "active": false,
@@ -8,29 +8,12 @@
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "update_stock",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -680,
-        720
-      ],
-      "id": "859f6193-5e29-4a89-9317-e55f75e618a4",
-      "name": "Webhook1",
-      "webhookId": "4f67c9d9-7753-4aaa-8fd3-0227afc35562"
-    },
-    {
-      "parameters": {
         "jsCode": "const salesData = $input.first().json.body;\nif (!Array.isArray(salesData)) {\n  console.error(\"Data penjualan harus berupa array.\")\n  return [{ json: { productIndexes: [], error: \"Sales data is not an array and cannot be processed.\"} }];\n}\nconst productIndexes = salesData.map(sale => sale.index).filter(index => index !== undefined && index !== null);\nif (productIndexes.length === 0 && salesData.length > 0) {\n  return [{ json: { productIndexes: [], error: \"No valid product indexes found in sales data.\"} }];\n}\nreturn [{ json: { productIndexes } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        80,
+        740,
         720
       ],
       "id": "e28ff3a3-fc2d-4f4e-9710-8e1df00963e1",
@@ -45,7 +28,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        280,
+        940,
         720
       ],
       "id": "1d51131b-60d1-49d4-b0f5-f5b348975a3d",
@@ -64,7 +47,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        760,
+        1420,
         720
       ],
       "id": "912bcfad-b165-403d-85c2-26a1862bb3f8",
@@ -99,7 +82,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        960,
+        1620,
         720
       ],
       "id": "a83e2c6d-ff17-44de-a19b-103c6242a894",
@@ -114,7 +97,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        1400,
+        2060,
         720
       ],
       "id": "3e31103f-ef8b-4d05-bfce-6a2399082095",
@@ -127,7 +110,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1180,
+        1840,
         800
       ],
       "id": "59e92b35-59ac-4492-8cbb-369de991ac06",
@@ -243,7 +226,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1180,
+        1840,
         660
       ],
       "id": "23a8bdd5-30c9-4626-a67d-1de573ae6894",
@@ -303,7 +286,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -440,
+        220,
         740
       ],
       "id": "7a517e68-1254-467b-8440-ea858346d4b3",
@@ -318,7 +301,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        -140,
+        520,
         920
       ],
       "id": "59f02758-7408-4b86-8772-be6fc918ca21",
@@ -341,7 +324,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -140,
+        520,
         720
       ],
       "id": "269c0979-5105-4a08-ac93-e989c048f1a9",
@@ -358,7 +341,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        760,
+        1420,
         900
       ],
       "id": "08cfd883-5533-41ff-a412-b054d78ea042",
@@ -401,25 +384,48 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        480,
+        1140,
         720
       ],
       "id": "b8b2eea3-53ee-4490-b0f3-cbbef6ed4802",
       "name": "Cek apakah nama produk sama dengan database"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "update_stock",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        740
+      ],
+      "id": "0049ddb7-9640-479e-955e-aa4a504ca551",
+      "name": "Webhook",
+      "webhookId": "a90e3eaa-296f-48ff-9f22-67076d7720f8"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"Running\",\n  \"message\": \"Workflow sedang dimulai...\"\n}",
+        "options": {
+          "responseCode": 201
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        160,
+        900
+      ],
+      "id": "c4d3bd65-93e4-44c4-abb7-3626ba35c4a4",
+      "name": "Response Status"
     }
   ],
   "connections": {
-    "Webhook1": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Prepare Product1": {
       "main": [
         [
@@ -539,6 +545,22 @@
           }
         ]
       ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Response Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -549,7 +571,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "97bc604b-3627-470d-ac45-0396eb9a1f83",
+  "versionId": "d0ea0de9-c6be-416d-8a4c-f0521d60af98",
   "triggerCount": 0,
   "tags": []
 }
