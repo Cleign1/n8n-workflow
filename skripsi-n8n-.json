@@ -1,0 +1,21 @@
+{
+  "createdAt": "2025-06-13T15:09:32.437Z",
+  "updatedAt": "2025-06-13T16:09:38.881Z",
+  "id": "9KkhgZRziRgMUJLS",
+  "name": "skripsi-n8n",
+  "active": false,
+  "isArchived": true,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "008c98b0-d842-474a-9b13-e7c6d5b97b69",
+  "triggerCount": 0,
+  "tags": []
+}
