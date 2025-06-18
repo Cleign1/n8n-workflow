@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-13T16:39:09.739Z",
-  "updatedAt": "2025-06-13T16:40:04.460Z",
+  "updatedAt": "2025-06-18T16:28:31.455Z",
   "id": "XNuBwlWLwCF5gd2p",
   "name": "new-AI-agent-2-not-finalized",
   "active": false,
@@ -99,6 +99,172 @@
         140
       ],
       "id": "31c47a9f-e8cf-4d3d-a559-afffef70566a"
+    },
+    {
+      "parameters": {
+        "path": "webhook-stock-trigger",
+        "options": {}
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        680
+      ],
+      "id": "fbb2adfd-55b0-4a32-8ff6-86a2f58b7836",
+      "webhookId": "b64a5c4e-9d22-4a0b-93f1-331070de632f"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH RankedSales AS (\n    SELECT\n        product_id, daily_sale,\n        ROW_NUMBER() OVER(PARTITION BY product_id ORDER BY sale_date DESC) as rn\n    FROM daily_sales\n    WHERE sale_date >= CURRENT_DATE - INTERVAL '5 days'\n),\nMovingAverages AS (\n    SELECT product_id, AVG(daily_sale) as moving_average_sales\n    FROM RankedSales WHERE rn <= 3\n    GROUP BY product_id\n)\nSELECT\n    p.id, p.name, p.stock AS current_stock,\n    COALESCE(ma.moving_average_sales, 0) AS predicted_sales_tomorrow\nFROM products p\nLEFT JOIN MovingAverages ma ON p.id = ma.product_id;",
+        "options": {}
+      },
+      "name": "PostgreSQL: Get Products & Predicted Sales",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        140,
+        680
+      ],
+      "id": "cad36647-a1e1-41d4-918e-4aee746cb3fb",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "name": "Split in Batches (Size: 100)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [
+        400,
+        680
+      ],
+      "id": "654c4b24-ec12-4d7f-9e9f-444e7e8f98d1"
+    },
+    {
+      "parameters": {},
+      "name": "AI Agent / LLM (Assess Risk in Batch)",
+      "type": "n8n-nodes-base.openAiChat",
+      "typeVersion": 1,
+      "position": [
+        660,
+        680
+      ],
+      "id": "a330a771-4cd1-44b8-8cc6-e59a4ad20a6b",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "jsCode": "// The AI node's response is the direct input to this Code node.\nconst aiResponseString = $input.item.json.choices[0].message.content;\n\n// Get the original data that was sent to the AI node\n// by referencing the output of the \"Split in Batches\" node.\nconst originalBatchData = $items(\"Split in Batches (Size: 100)\"); \n\nlet aiAssessments = [];\ntry {\n  // Parse the AI's JSON response\n  aiAssessments = JSON.parse(aiResponseString);\n} catch (error) {\n  // If AI fails to return valid JSON, create a placeholder\n  // This prevents the entire workflow from failing\n  return originalBatchData.map(item => ({\n    ...item.json,\n    predictedRemainingStock: item.json.current_stock - item.json.predicted_sales_tomorrow,\n    aiAssessment: \"Error: AI response was not valid JSON.\"\n  }));\n}\n\n// Create a quick lookup map for AI assessments by product ID\nconst assessmentMap = new Map(aiAssessments.map(item => [item.id, item.aiAssessment]));\n\n// Map over the ORIGINAL data and enrich it with the AI assessment.\nconst finalResults = originalBatchData.map(item => {\n  const product = item.json;\n  const predictedRemaining = product.current_stock - product.predicted_sales_tomorrow;\n\n  return {\n    productId: product.id,\n    productName: product.name,\n    currentStock: product.current_stock,\n    predictedSalesTomorrow: parseFloat(product.predicted_sales_tomorrow.toFixed(2)),\n    predictedRemainingStock: parseFloat(predictedRemaining.toFixed(2)),\n    aiAssessment: assessmentMap.get(product.id) || \"Assessment not available\"\n  };\n});\n\nreturn finalResults;"
+      },
+      "name": "Code (Combine Data & Calculate Final Numbers)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        680
+      ],
+      "id": "4137c69b-8be5-43db-ad73-ec50f676e385"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "stock-prediction",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "93ebc9bd-f7a5-4a28-bcea-b305d14a25c2",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        1100
+      ],
+      "webhookId": "stock-prediction-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH RankedSales AS (\n    SELECT\n        product_id, daily_sale,\n        ROW_NUMBER() OVER(PARTITION BY product_id ORDER BY sale_date DESC) as rn\n    FROM daily_sales\n    WHERE sale_date >= CURRENT_DATE - INTERVAL '5 days'\n),\nMovingAverages AS (\n    SELECT product_id, AVG(daily_sale) as moving_average_sales\n    FROM RankedSales WHERE rn <= 3\n    GROUP BY product_id\n)\nSELECT\n    p.id, p.name, p.stock AS current_stock,\n    COALESCE(ma.moving_average_sales, 0) AS predicted_sales_tomorrow\nFROM products p\nLEFT JOIN MovingAverages ma ON p.id = ma.product_id;",
+        "options": {}
+      },
+      "id": "6a1a937a-2424-44b7-b294-54b1a407ccc5",
+      "name": "PostgreSQL - Get Products & Predicted Sales",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        -1060,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 2000,
+        "options": {}
+      },
+      "id": "52e193fd-dcf4-4513-9591-ed3066bcf062",
+      "name": "Split in Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -840,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a stock analysis API. You will receive a JSON array of products. For each product, assess the stock situation and provide a risk level.\n\nYour response MUST be a valid JSON array, with one object for each product from the input. Each object must contain the \"id\" and a new field called \"aiAssessment\".\n\nInput Data:\n{{ $json }}\n\nExample Response for a single product object:\n{\n  \"id\": 123,\n  \"aiAssessment\": \"Stock is low compared to sales. Risk Level: High\"\n}\n\nProcess all products in the input and return only the JSON array of results. Do not include any explanatory text, just the JSON array.",
+        "options": {
+          "systemMessage": "You are a precise stock analysis system that returns only valid JSON arrays."
+        }
+      },
+      "id": "78ee21c6-5232-4c0c-9fe9-9ce262ea2499",
+      "name": "AI Agent - Assess Risk in Batch",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        1240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all items from the current batch\nconst currentBatchItems = $input.all();\n\n// Get the AI response\nconst aiResponse = $node[\"AI Agent - Assess Risk in Batch\"].json;\n\n// Extract the actual response text\nlet aiResponseText = '';\nif (aiResponse.output && typeof aiResponse.output === 'string') {\n  aiResponseText = aiResponse.output;\n} else if (aiResponse.text && typeof aiResponse.text === 'string') {\n  aiResponseText = aiResponse.text;\n} else if (typeof aiResponse === 'string') {\n  aiResponseText = aiResponse;\n} else {\n  // Fallback - stringify the entire response and try to extract JSON\n  aiResponseText = JSON.stringify(aiResponse);\n}\n\nlet aiAssessments = [];\ntry {\n  // Try to parse the AI response as JSON\n  // First, try to extract JSON array from the response if it contains other text\n  const jsonMatch = aiResponseText.match(/\\[.*\\]/s);\n  if (jsonMatch) {\n    aiAssessments = JSON.parse(jsonMatch[0]);\n  } else {\n    aiAssessments = JSON.parse(aiResponseText);\n  }\n} catch (error) {\n  console.error('Failed to parse AI response:', error);\n  console.error('AI Response Text:', aiResponseText);\n  \n  // If AI fails to return valid JSON, create placeholder assessments\n  aiAssessments = currentBatchItems.map(item => ({\n    id: item.json.id,\n    aiAssessment: \"Error: AI response was not valid JSON. Manual review required.\"\n  }));\n}\n\n// Create a quick lookup map for AI assessments by product ID\nconst assessmentMap = new Map(aiAssessments.map(item => [item.id, item.aiAssessment]));\n\n// Process each item in the batch\nconst finalResults = currentBatchItems.map(item => {\n  const product = item.json;\n  const predictedRemaining = product.current_stock - product.predicted_sales_tomorrow;\n\n  return {\n    productId: product.id,\n    productName: product.name,\n    currentStock: product.current_stock,\n    predictedSalesTomorrow: parseFloat(product.predicted_sales_tomorrow.toFixed(2)),\n    predictedRemainingStock: parseFloat(predictedRemaining.toFixed(2)),\n    aiAssessment: assessmentMap.get(product.id) || \"Assessment not available\",\n    batchProcessedAt: new Date().toISOString()\n  };\n});\n\nreturn finalResults;"
+      },
+      "id": "719f5283-637d-4fc2-aa1a-016b03e81658",
+      "name": "Code - Combine Data & Calculate Final Numbers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        1240
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"Stock prediction analysis completed\",\n  \"totalProductsProcessed\": {{ $items().length }},\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"batchingInfo\": {\n    \"batchSize\": 100,\n    \"estimatedApiCallsSaved\": {{ Math.floor($items().length * 0.974) }}\n  },\n  \"data\": {{ JSON.stringify($items()) }}\n}",
+        "options": {}
+      },
+      "id": "14de66a1-236c-430e-954b-d30dab6d31ed",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        1100
+      ]
     }
   ],
   "connections": {
@@ -145,6 +311,90 @@
           }
         ]
       ]
+    },
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL: Get Products & Predicted Sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL: Get Products & Predicted Sales": {
+      "main": [
+        [
+          {
+            "node": "Split in Batches (Size: 100)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL - Get Products & Predicted Sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL - Get Products & Predicted Sales": {
+      "main": [
+        [
+          {
+            "node": "Split in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split in Batches": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent - Assess Risk in Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Assess Risk in Batch": {
+      "main": [
+        [
+          {
+            "node": "Code - Combine Data & Calculate Final Numbers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Combine Data & Calculate Final Numbers": {
+      "main": [
+        [
+          {
+            "node": "Split in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -155,7 +405,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "296c4c43-50b2-442f-9385-a99f84864f2b",
+  "versionId": "95950ea0-34b0-4e24-8d96-3c1f5814c259",
   "triggerCount": 0,
   "tags": []
 }
