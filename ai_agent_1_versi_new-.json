@@ -1,14 +1,14 @@
 {
   "createdAt": "2025-05-31T07:58:49.584Z",
-  "updatedAt": "2025-06-13T16:19:27.303Z",
+  "updatedAt": "2025-06-19T14:13:30.717Z",
   "id": "ZUWI4WKB1w7PNOQB",
   "name": "ai_agent_1_versi_new",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
       "parameters": {
-        "jsCode": "const salesData = $input.first().json.body;\nif (!Array.isArray(salesData)) {\n  console.error(\"Data penjualan harus berupa array.\")\n  return [{ json: { productIndexes: [], error: \"Sales data is not an array and cannot be processed.\"} }];\n}\nconst productIndexes = salesData.map(sale => sale.index).filter(index => index !== undefined && index !== null);\nif (productIndexes.length === 0 && salesData.length > 0) {\n  return [{ json: { productIndexes: [], error: \"No valid product indexes found in sales data.\"} }];\n}\nreturn [{ json: { productIndexes } }];"
+        "jsCode": "const salesData = $input.first().json.body;\nif (!Array.isArray(salesData)) {\n  return [{ json: { productIndexes: [], error: \"Sales data is not an array and cannot be processed.\"} }];\n}\nconst productIndexes = salesData.map(sale => sale.index).filter(index => index !== undefined && index !== null);\nif (productIndexes.length === 0 && salesData.length > 0) {\n  return [{ json: { productIndexes: [], error: \"No valid product indexes found in sales data.\"} }];\n}\nreturn [{ json: { productIndexes } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -22,7 +22,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM public.amazon_dataset\nWHERE index IN ({{ $json.productIndexes && $json.productIndexes.length > 0 ? $json.productIndexes.join(', ') : null }})",
+        "query": "SELECT * FROM public.amazon_dataset\nWHERE index IN ({{ $json.productIndexes && $json.productIndexes.length > 0 ? $json.productIndexes.join(', ') : null }})\nORDER BY index ASC",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -42,7 +42,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Mengambil semua item output dari node \"Get Product Data\"\nconst productDataItems = $(\"Get Product Data1\").all();\n\n// Ekstrak objek .json dari setiap item dan simpan ke dalam array baru\n// Ini adalah daftar produk aktual dari database yang akan kita gunakan untuk pencocokan\nconst productsInDatabase = productDataItems.map(item => item.json);\nif (productsInDatabase.length > 0) {\n  console.log(\"Produk Pertama dari Database (setelah .map):\", JSON.stringify(productsInDatabase[0], null, 2));\n} else {\n  console.log(\"Tidak ada produk yang diambil dari database (productsInDatabase kosong setelah .map).\");\n}\n\n// Data penjualan dari webhook\nconst salesData = $('Webhook1').first().json.body;\n\nlet outputItems = []; // Array untuk menampung semua item yang akan di-output oleh node ini\n\n// 1. Validasi Awal Data Penjualan (salesData)\nif (!Array.isArray(salesData)) {\n  outputItems.push({\n    json: {\n      type: \"critical_error\",\n      errorType: \"InvalidSalesDataFormat\",\n      message: \"Data penjualan yang diterima bukan array.\",\n      originalSalesData: salesData\n    }\n  });\n  return outputItems;\n}\n\nif (salesData.length === 0) {\n  return [];\n}\n\n// 2. Proses Setiap Item Penjualan\nsalesData.forEach(sale => {\n  // Pastikan setiap item penjualan (sale) memiliki 'index' produk\n  if (sale.index === undefined || sale.index === null) {\n    console.warn(`Item penjualan tidak memiliki 'index' yang valid: ${JSON.stringify(sale)}`);\n    outputItems.push({\n      json: {\n        type: \"product_error\",\n        error_details: \"Item penjualan tidak memiliki 'index' yang valid.\",\n        sale_item: sale\n      }\n    });\n    return; // Lanjut ke item penjualan berikutnya\n  }\n\n  // Konversi 'sale.index' dan 'product.index' ke tipe data yang konsisten (misalnya, String) untuk perbandingan\n  // Ini penting untuk menghindari masalah ketidakcocokan tipe (angka vs string)\n  const saleIndexToCompare = String(sale.index).trim(); // Hapus spasi berlebih jika ada\n\n  // Cari produk yang sesuai di 'productsInDatabase' (yang sudah berisi objek .json)\n  // Pastikan 'p.index' juga dikonversi ke String untuk perbandingan yang adil\n  const productInDb = productsInDatabase.find(p => {\n    if (p && (p.index !== undefined && p.index !== null)) {\n      const dbIndexToCompare = String(p.index).trim();\n      return dbIndexToCompare === saleIndexToCompare;\n    }\n    return false; // Jika p.index tidak valid, jangan cocokkan\n  });\n\n  if (productInDb) {\n    const quantitySold = Number(sale.quantity_sold);\n    const currentStock = Number(productInDb.stock);\n\n    if (isNaN(quantitySold)) {\n      console.warn(`Kuantitas terjual tidak valid untuk produk index \"${saleIndexToCompare}\": ${sale.quantity_sold}`);\n      outputItems.push({\n        json: {\n          type: \"data_error\",\n          product_name: productInDb.name || sale.name || null,\n          product_index: productInDb.index,\n          message: `Kuantitas terjual (quantity_sold) tidak valid: ${sale.quantity_sold}`\n        }\n      });\n      return; \n    }\n    if (isNaN(currentStock)) {\n      console.warn(`Stok saat ini tidak valid untuk produk index \"${saleIndexToCompare}\" di database.`);\n      outputItems.push({\n        json: {\n          type: \"data_error\",\n          product_name: productInDb.name || sale.name || null,\n          product_index: productInDb.index,\n          message: `Stok produk di database tidak valid (NaN). Nilai stok: ${productInDb.stock}`\n        }\n      });\n      return; \n    }\n\n    const newStock = currentStock - quantitySold;\n    outputItems.push({\n      json: {\n        index: productInDb.index,\n        stock: Math.max(0, newStock)\n      }\n    });\n  } else {\n    console.warn(`Produk dengan index \"${saleIndexToCompare}\" TIDAK DITEMUKAN di database.`);\n    outputItems.push({\n      json: {\n        type: \"product_not_found\",\n        product_name: sale.name || null,\n        product_index: sale.index, \n        quantity_sold: sale.quantity_sold,\n        message: `Produk dengan index \"${saleIndexToCompare}\" (Nama: \"${sale.name || 'Tidak ada nama'}\") tidak ditemukan di database.`\n      }\n    });\n  }\n});\n\nconsole.log(\"Output Akhir dari 'Process Sales & Identify Issues':\", JSON.stringify(outputItems, null, 2));\nreturn outputItems;"
+        "jsCode": "// Mengambil semua item output dari node \"Get Product Data\"\nconst productDataItems = $(\"Get Product Data1\").all();\n\n// Ekstrak objek .json dari setiap item dan simpan ke dalam array baru\n// Ini adalah daftar produk aktual dari database yang akan kita gunakan untuk pencocokan\nconst productsInDatabase = productDataItems.map(item => item.json);\nif (productsInDatabase.length > 0) {\n  console.log(\"Produk Pertama dari Database (setelah .map):\", JSON.stringify(productsInDatabase[0], null, 2));\n} else {\n  console.log(\"Tidak ada produk yang diambil dari database (productsInDatabase kosong setelah .map).\");\n}\n\n// Data penjualan dari webhook\nconst salesData = $('Webhook').first().json.body;\n\nlet outputItems = []; // Array untuk menampung semua item yang akan di-output oleh node ini\n\n// 1. Validasi Awal Data Penjualan (salesData)\nif (!Array.isArray(salesData)) {\n  outputItems.push({\n    json: {\n      type: \"critical_error\",\n      errorType: \"InvalidSalesDataFormat\",\n      message: \"Data penjualan yang diterima bukan array.\",\n      originalSalesData: salesData\n    }\n  });\n  return outputItems;\n}\n\nif (salesData.length === 0) {\n  return [];\n}\n\n// 2. Proses Setiap Item Penjualan\nsalesData.forEach(sale => {\n  // Pastikan setiap item penjualan (sale) memiliki 'index' produk\n  if (sale.index === undefined || sale.index === null) {\n    console.warn(`Item penjualan tidak memiliki 'index' yang valid: ${JSON.stringify(sale)}`);\n    outputItems.push({\n      json: {\n        type: \"product_error\",\n        error_details: \"Item penjualan tidak memiliki 'index' yang valid.\",\n        sale_item: sale\n      }\n    });\n    return; // Lanjut ke item penjualan berikutnya\n  }\n\n  // Konversi 'sale.index' dan 'product.index' ke tipe data yang konsisten (misalnya, String) untuk perbandingan\n  // Ini penting untuk menghindari masalah ketidakcocokan tipe (angka vs string)\n  const saleIndexToCompare = String(sale.index).trim(); // Hapus spasi berlebih jika ada\n\n  // Cari produk yang sesuai di 'productsInDatabase' (yang sudah berisi objek .json)\n  // Pastikan 'p.index' juga dikonversi ke String untuk perbandingan yang adil\n  const productInDb = productsInDatabase.find(p => {\n    if (p && (p.index !== undefined && p.index !== null)) {\n      const dbIndexToCompare = String(p.index).trim();\n      return dbIndexToCompare === saleIndexToCompare;\n    }\n    return false; // Jika p.index tidak valid, jangan cocokkan\n  });\n\n  if (productInDb) {\n    const quantitySold = Number(sale.quantity_sold);\n    const currentStock = Number(productInDb.stock);\n\n    if (isNaN(quantitySold)) {\n      console.warn(`Kuantitas terjual tidak valid untuk produk index \"${saleIndexToCompare}\": ${sale.quantity_sold}`);\n      outputItems.push({\n        json: {\n          type: \"data_error\",\n          product_name: productInDb.name || sale.name || null,\n          product_index: productInDb.index,\n          message: `Kuantitas terjual (quantity_sold) tidak valid: ${sale.quantity_sold}`\n        }\n      });\n      return; \n    }\n    if (isNaN(currentStock)) {\n      console.warn(`Stok saat ini tidak valid untuk produk index \"${saleIndexToCompare}\" di database.`);\n      outputItems.push({\n        json: {\n          type: \"data_error\",\n          product_name: productInDb.name || sale.name || null,\n          product_index: productInDb.index,\n          message: `Stok produk di database tidak valid (NaN). Nilai stok: ${productInDb.stock}`\n        }\n      });\n      return; \n    }\n\n    const newStock = currentStock - quantitySold;\n    outputItems.push({\n      json: {\n        index: productInDb.index,\n        stock: Math.max(0, newStock)\n      }\n    });\n  } else {\n    console.warn(`Produk dengan index \"${saleIndexToCompare}\" TIDAK DITEMUKAN di database.`);\n    outputItems.push({\n      json: {\n        type: \"product_not_found\",\n        product_name: sale.name || null,\n        product_index: sale.index, \n        quantity_sold: sale.quantity_sold,\n        message: `Produk dengan index \"${saleIndexToCompare}\" (Nama: \"${sale.name || 'Tidak ada nama'}\") tidak ditemukan di database.`\n      }\n    });\n  }\n});\n\nconsole.log(\"Output Akhir dari 'Process Sales & Identify Issues':\", JSON.stringify(outputItems, null, 2));\nreturn outputItems;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -332,66 +332,6 @@
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={\n  \"Error\": \"Nama Produk ada yang tidak sesuai\"\n  \"Index\": {{ $json.index }}\n  \"Nama\": {{ $json.name }}\n}",
-        "options": {
-          "responseCode": 400
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.3,
-      "position": [
-        1420,
-        900
-      ],
-      "id": "08cfd883-5533-41ff-a412-b054d78ea042",
-      "name": "Respond to Webhook2"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "87bdcd8f-d673-4916-876d-fafcc6d611d1",
-              "leftValue": "={{ $('Edit Fields').item.json.body[0].index }}",
-              "rightValue": "={{ $json.index.toString() }}",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "c2ed11f5-dd1d-493e-8a2b-b401fbb8872b",
-              "leftValue": "={{ $json.name }}",
-              "rightValue": "={{ $('Edit Fields').item.json.body[0].name }}",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        1140,
-        720
-      ],
-      "id": "b8b2eea3-53ee-4490-b0f3-cbbef6ed4802",
-      "name": "Cek apakah nama produk sama dengan database"
-    },
-    {
-      "parameters": {
         "httpMethod": "POST",
         "path": "update_stock",
         "responseMode": "responseNode",
@@ -423,6 +363,57 @@
       ],
       "id": "c4d3bd65-93e4-44c4-abb7-3626ba35c4a4",
       "name": "Response Status"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"Error\": \"Nama Produk ada yang tidak sesuai\"\n  \"Index\": {{ $json.index }}\n  \"Nama\": {{ $json.name }}\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1420,
+        900
+      ],
+      "id": "08cfd883-5533-41ff-a412-b054d78ea042",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "87bdcd8f-d673-4916-876d-fafcc6d611d1",
+              "leftValue": "={{ $('Edit Fields').item.json.body[$itemIndex].index }}",
+              "rightValue": "={{ $json.index.toString() }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1140,
+        720
+      ],
+      "id": "b8b2eea3-53ee-4490-b0f3-cbbef6ed4802",
+      "name": "Cek apakah nama produk sama dengan database"
     }
   ],
   "connections": {
@@ -528,6 +519,22 @@
         ]
       ]
     },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Response Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Cek apakah nama produk sama dengan database": {
       "main": [
         [
@@ -545,22 +552,6 @@
           }
         ]
       ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Response Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
@@ -571,7 +562,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "d0ea0de9-c6be-416d-8a4c-f0521d60af98",
-  "triggerCount": 0,
+  "versionId": "e9859694-92e4-437c-936e-fe1ccc9d6f8f",
+  "triggerCount": 1,
   "tags": []
 }
