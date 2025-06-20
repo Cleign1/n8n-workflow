@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-13T16:39:09.739Z",
-  "updatedAt": "2025-06-18T16:28:31.455Z",
+  "updatedAt": "2025-06-19T11:23:52.610Z",
   "id": "XNuBwlWLwCF5gd2p",
   "name": "new-AI-agent-2-not-finalized",
   "active": false,
@@ -20,10 +20,11 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.1,
       "position": [
-        -960,
+        -1740,
         140
       ],
-      "id": "700b9bc7-a298-45f0-927b-a6f48710e0a4"
+      "id": "700b9bc7-a298-45f0-927b-a6f48710e0a4",
+      "disabled": true
     },
     {
       "parameters": {
@@ -35,7 +36,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        -740,
+        -1520,
         140
       ],
       "id": "83548e12-98ea-457a-b275-3c86e43e9214",
@@ -44,7 +45,8 @@
           "id": "ufLqaq0vJt3QUgxO",
           "name": "Postgres account 2"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -56,7 +58,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        -520,
+        -1300,
         140
       ],
       "id": "b58fa212-90ca-47e0-a5ca-b6ea72602f17",
@@ -65,7 +67,8 @@
           "id": "ufLqaq0vJt3QUgxO",
           "name": "Postgres account 2"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -75,10 +78,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -300,
+        -1080,
         140
       ],
-      "id": "ff036642-e4c9-4148-b274-e432c1c37a10"
+      "id": "ff036642-e4c9-4148-b274-e432c1c37a10",
+      "disabled": true
     },
     {
       "parameters": {
@@ -95,10 +99,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -80,
+        -860,
         140
       ],
-      "id": "31c47a9f-e8cf-4d3d-a559-afffef70566a"
+      "id": "31c47a9f-e8cf-4d3d-a559-afffef70566a",
+      "disabled": true
     },
     {
       "parameters": {
@@ -109,11 +114,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -100,
-        680
+        -1740,
+        400
       ],
       "id": "fbb2adfd-55b0-4a32-8ff6-86a2f58b7836",
-      "webhookId": "b64a5c4e-9d22-4a0b-93f1-331070de632f"
+      "webhookId": "b64a5c4e-9d22-4a0b-93f1-331070de632f",
+      "disabled": true
     },
     {
       "parameters": {
@@ -125,8 +131,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        140,
-        680
+        -1520,
+        400
       ],
       "id": "cad36647-a1e1-41d4-918e-4aee746cb3fb",
       "credentials": {
@@ -134,7 +140,8 @@
           "id": "ufLqaq0vJt3QUgxO",
           "name": "Postgres account 2"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -145,22 +152,11 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 2,
       "position": [
-        400,
-        680
+        -1300,
+        400
       ],
-      "id": "654c4b24-ec12-4d7f-9e9f-444e7e8f98d1"
-    },
-    {
-      "parameters": {},
-      "name": "AI Agent / LLM (Assess Risk in Batch)",
-      "type": "n8n-nodes-base.openAiChat",
-      "typeVersion": 1,
-      "position": [
-        660,
-        680
-      ],
-      "id": "a330a771-4cd1-44b8-8cc6-e59a4ad20a6b",
-      "credentials": {}
+      "id": "654c4b24-ec12-4d7f-9e9f-444e7e8f98d1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -170,10 +166,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        940,
-        680
+        -1740,
+        660
       ],
-      "id": "4137c69b-8be5-43db-ad73-ec50f676e385"
+      "id": "4137c69b-8be5-43db-ad73-ec50f676e385",
+      "disabled": true
     },
     {
       "parameters": {
@@ -187,10 +184,11 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -1280,
-        1100
+        -1740,
+        920
       ],
-      "webhookId": "stock-prediction-webhook"
+      "webhookId": "stock-prediction-webhook",
+      "disabled": true
     },
     {
       "parameters": {
@@ -203,23 +201,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.4,
       "position": [
-        -1060,
-        1100
-      ]
-    },
-    {
-      "parameters": {
-        "batchSize": 2000,
-        "options": {}
+        -1520,
+        1280
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
       },
-      "id": "52e193fd-dcf4-4513-9591-ed3066bcf062",
-      "name": "Split in Batches",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
-      "position": [
-        -840,
-        1100
-      ]
+      "disabled": true
     },
     {
       "parameters": {
@@ -234,9 +225,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        -660,
-        1240
-      ]
+        -1300,
+        1180
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -247,14 +239,15 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -320,
-        1240
-      ]
+        -924,
+        1280
+      ],
+      "disabled": true
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"Stock prediction analysis completed\",\n  \"totalProductsProcessed\": {{ $items().length }},\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"batchingInfo\": {\n    \"batchSize\": 100,\n    \"estimatedApiCallsSaved\": {{ Math.floor($items().length * 0.974) }}\n  },\n  \"data\": {{ JSON.stringify($items()) }}\n}",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Stock prediction analysis completed\",\n  \"totalProductsProcessed\": {{ $items().length() }},\n  \"timestamp\": \"{{ new Date().toISOString() }}\",\n  \"batchingInfo\": {\n    \"batchSize\": 100,\n    \"estimatedApiCallsSaved\": {{ Math.floor($items().length * 0.974) }}\n  },\n  \"data\": {{ JSON.stringify($items()) }}\n}",
         "options": {}
       },
       "id": "14de66a1-236c-430e-954b-d30dab6d31ed",
@@ -262,9 +255,484 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        -40,
-        1100
+        -704,
+        1280
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "buat-maen2-aja",
+          "mode": "list",
+          "cachedResultName": "buat maen2 aja"
+        },
+        "modelName": "gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        -1272,
+        1400
+      ],
+      "id": "cff4f2e7-d82f-4a33-86f1-8a2d4c5b7a6f",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "frIS2sQR5bxxzXkA",
+          "name": "Google Service Account account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -1152,
+        1400
+      ],
+      "id": "2a4a273c-f078-4b5f-887d-3dac6d35d7e1",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "YqwYDnd9s1sGWmQ2",
+          "name": "Redis account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "responseDataSource": "set",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1080,
+        1640
+      ],
+      "id": "6af9284a-e248-40ad-81e9-3ed9dc628839",
+      "name": "Respond to Webhook1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1300,
+        1640
+      ],
+      "id": "a89cf469-f90d-41ea-bae5-918dd22b0b54",
+      "name": "Convert to File",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "path": "stock-prediction",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "e23667cc-3170-4eaf-9f57-c7dbb3cc1329",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1740,
+        1640
+      ],
+      "webhookId": "stock-prediction-webhook",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "category": "randomData",
+        "randomDataCount": 20
+      },
+      "type": "n8n-nodes-base.debugHelper",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        1640
+      ],
+      "id": "0b3047a2-8a67-429e-b805-9c6a7de9c310",
+      "name": "DebugHelper",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1740,
+        1280
+      ],
+      "id": "154d81a3-1cbc-4ddf-bf15-de58bfd86981",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e196443-9842-4ad6-87d3-6ab06e90388f",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "array"
+            },
+            {
+              "id": "ede970dc-5c1b-46c3-829f-fe572060e62a",
+              "name": "sesionId",
+              "value": "={{(+new Date).toString(36).slice(-5) + Math.random().toString(36).substr(2, 5)}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1520,
+        920
+      ],
+      "id": "03943cbb-23d1-431b-8e29-4fd86017909d",
+      "name": "Edit Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"AI-powered stock prediction analysis completed\",\n  \"processedAt\": \"{{ new Date().toISOString() }}\",\n  \"summary\": {\n    \"totalProductsProcessed\": {{ $items().length }},\n    \"criticalRisk\": {{ $items().filter(item => item.json.riskLevel === 'Critical').length }},\n    \"highRisk\": {{ $items().filter(item => item.json.riskLevel === 'High').length }},\n    \"mediumRisk\": {{ $items().filter(item => item.json.riskLevel === 'Medium').length }},\n    \"lowRisk\": {{ $items().filter(item => item.json.riskLevel === 'Low').length }}\n  },\n  \"data\": {{ JSON.stringify($items().map(item => item.json)) }}\n}",
+        "options": {}
+      },
+      "name": "Respond to Webhook2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        -44,
+        2000
+      ],
+      "id": "8d3a24f6-88a1-4399-ab32-bdafb075a0b0",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a stock analysis API. You will receive a JSON array of products with their current stock and predicted sales. For each product, assess the stock situation and provide a risk level.\n\nYour response MUST be a valid JSON array, with one object for each product from the input. Each object must contain the \"id\" and a new field called \"aiAssessment\".\n\nInput Data:\n{{ $json }}\n\nAnalysis Guidelines:\n- If predicted_sales_tomorrow > current_stock: \"Critical Risk - Stock insufficient for predicted demand\"\n- If predicted_sales_tomorrow > (current_stock * 0.8): \"High Risk - Stock running low\"\n- If predicted_sales_tomorrow > (current_stock * 0.5): \"Medium Risk - Monitor stock levels\"\n- If predicted_sales_tomorrow < (current_stock * 0.3): \"Low Risk - Adequate stock available\"\n- Consider product name for seasonal or demand patterns\n\nExample Response:\n[\n  {\n    \"id\": 1,\n    \"aiAssessment\": \"High Risk - Current stock of 25 units may not meet predicted demand of 22 units. Recommend immediate restocking.\"\n  }\n]\n\nProcess all products in the input and return only the JSON array of results.",
+        "options": {
+          "systemMessage": "You are a precise stock analysis system that returns only valid JSON arrays with detailed risk assessments."
+        }
+      },
+      "id": "3eac25df-5d3c-4f98-8c17-aa136004c440",
+      "name": "AI Agent - Assess Risk in Batch1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        2000
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agentic-ai-2-paging",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1740,
+        2000
+      ],
+      "id": "301e6b0b-500b-4a05-828e-0bc847b9a019",
+      "name": "Webhook2",
+      "webhookId": "e43e8bfb-c727-475c-8f0f-7a50e16b1772",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all items from the current batch\nconst currentBatchItems = $input.all();\n\n// Get the AI response\nconst aiNode = $node[\"AI Agent - Assess Risk in Batch1\"];\nlet aiResponseText = '';\n\n// Handle different AI response formats\nif (aiNode && aiNode.json) {\n  if (aiNode.json.output) {\n    aiResponseText = aiNode.json.output;\n  } else if (aiNode.json.text) {\n    aiResponseText = aiNode.json.text;\n  } else if (aiNode.json.response) {\n    aiResponseText = aiNode.json.response;\n  } else {\n    aiResponseText = JSON.stringify(aiNode.json);\n  }\n}\n\nlet aiAssessments = [];\ntry {\n  // Clean the response text and extract JSON\n  const cleanedResponse = aiResponseText.trim();\n  \n  // Try to extract JSON array from the response\n  const jsonMatch = cleanedResponse.match(/\\[[\\s\\S]*\\]/);\n  if (jsonMatch) {\n    aiAssessments = JSON.parse(jsonMatch[0]);\n  } else {\n    // Try parsing the entire response\n    aiAssessments = JSON.parse(cleanedResponse);\n  }\n  \n  console.log('Successfully parsed AI assessments:', aiAssessments.length, 'items');\n} catch (error) {\n  console.error('Failed to parse AI response:', error);\n  console.error('AI Response Text:', aiResponseText);\n  \n  // Create fallback assessments based on simple logic\n  aiAssessments = currentBatchItems.map(item => {\n    const product = item.json;\n    const stockRatio = product.current_stock / (product.predicted_sales_tomorrow || 1);\n    \n    let assessment = \"Manual review required - AI parsing failed. \";\n    if (stockRatio < 1) {\n      assessment += \"Critical: Stock insufficient for predicted demand.\";\n    } else if (stockRatio < 2) {\n      assessment += \"High Risk: Stock running low.\";\n    } else if (stockRatio < 4) {\n      assessment += \"Medium Risk: Monitor stock levels.\";\n    } else {\n      assessment += \"Low Risk: Adequate stock available.\";\n    }\n    \n    return {\n      id: product.id,\n      aiAssessment: assessment\n    };\n  });\n}\n\n// Create a lookup map for AI assessments\nconst assessmentMap = new Map(aiAssessments.map(item => [item.id, item.aiAssessment]));\n\n// Process each item in the batch\nconst finalResults = currentBatchItems.map(item => {\n  const product = item.json;\n  \n  // Calculate risk level based on stock ratios\n  const stockRatio = product.current_stock / (product.predicted_sales_tomorrow || 1);\n  let riskLevel = 'Unknown';\n  if (stockRatio < 1) riskLevel = 'Critical';\n  else if (stockRatio < 2) riskLevel = 'High';\n  else if (stockRatio < 4) riskLevel = 'Medium';\n  else riskLevel = 'Low';\n  \n  return {\n    productId: product.id,\n    productName: product.name,\n    currentStock: product.current_stock,\n    predictedSalesTomorrow: product.predicted_sales_tomorrow,\n    predictedStockAfter3Days: product.predicted_stock_after_3days,\n    status: product.status,\n    stockToSalesRatio: parseFloat(stockRatio.toFixed(2)),\n    riskLevel: riskLevel,\n    aiAssessment: assessmentMap.get(product.id) || \"Assessment not available\",\n    batchProcessedAt: new Date().toISOString()\n  };\n});\n\nreturn finalResults;"
+      },
+      "id": "a79d5283-6e40-4b68-b0ef-90ae1d82ff2f",
+      "name": "Code - Combine Data & AI Assessment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -264,
+        2000
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil semua data dari node Postgres Sales dan Postgres Product\nconst salesAll = $('Postgres Sales').all().map(i => i.json);\nconst productsAll = $('Postgres Product').all().map(i => i.json);\n\nconst output = [];\n\nfor (const product of productsAll) {\n  // Cari data sales yang cocok berdasarkan name\n  const matchedSales = salesAll.find(sale => sale.name === product.name) || {};\n\n  const stock = product.stock !== undefined ? Number(product.stock) : 0;\n  const avgDailySold = matchedSales.avg_daily_sold_3days !== undefined ? Number(matchedSales.avg_daily_sold_3days) : 0;\n\n  const predictedStock = stock - (avgDailySold * 3);\n\n  output.push({\n    json: {\n      id: product.index || Math.floor(Math.random() * 100000),\n      name: product.name || '-',\n      current_stock: stock,\n      predicted_sales_tomorrow: Number(avgDailySold.toFixed(2)),\n      predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n      status: predictedStock > 0 ? 'cukup' : 'kurang'\n    }\n  });\n}\n\nreturn output;"
+      },
+      "name": "Prediksi Stok",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -860,
+        2000
+      ],
+      "id": "0973ad0a-f239-46d5-8109-72ac0f071fb4",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "name",
+              "field2": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Merge By Name",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -1080,
+        2000
+      ],
+      "id": "0aac357a-adc4-4262-b0a9-3a61faa6bcee",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT index, name, stock\nFROM amazon_dataset\nORDER BY name;",
+        "options": {}
+      },
+      "name": "Postgres Product",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        -1300,
+        2100
+      ],
+      "id": "f2af73e7-0642-4b18-bed3-31575eb97d80",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT name, SUM(quantity_sold) AS total_sold_3days, AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $json.startDate }}' AND date <= '{{ $json.endDate }}'\nGROUP BY name\nORDER BY name;",
+        "options": {}
+      },
+      "name": "Postgres Sales",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        -1300,
+        1900
+      ],
+      "id": "c79fdad9-2d7a-44f5-9226-399aa5042cdb",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil parameter tanggal dari input webhook\nconst inputDate = $input.first().json.body.date; // format: 'YYYY-MM-DD'\nif (!inputDate) throw new Error('Tanggal tidak ditemukan di input JSON.');\n\nconst today = new Date(inputDate);\nconst dateFormat = (date) => date.toISOString().split('T')[0];\n\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\nreturn [{\n  json: {\n    today: dateFormat(today),\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        2000
+      ],
+      "id": "55cf6287-cc2b-4c92-9232-870bf02e1f45",
+      "name": "Function Date Processing",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil parameter paging dan tanggal dari input webhook\nconst inputDate = $input.first().json.body.date; // format: 'YYYY-MM-DD'\nif (!inputDate) throw new Error('Tanggal tidak ditemukan di input JSON.');\n\nconst page = $input.first().json.body.page ? Number($input.first().json.body.page) : 1;\nconst limit = $input.first().json.body.limit ? Number($input.first().json.body.limit) : 5000;\nconst offset = (page - 1) * limit;\n\nconst today = new Date(inputDate);\nconst dateFormat = (date) => date.toISOString().split('T')[0];\n\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\nreturn [{\n  json: {\n    today: dateFormat(today),\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday),\n    page,\n    limit,\n    offset\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        2460
+      ],
+      "id": "7431fdc3-f438-468d-957f-a46a031b75e5",
+      "name": "Function Date Processing & Paging"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT name, SUM(quantity_sold) AS total_sold_3days, AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $json.startDate }}' AND date <= '{{ $json.endDate }}'\nGROUP BY name\nORDER BY name;",
+        "options": {}
+      },
+      "name": "Postgres Sales1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        -1300,
+        2360
+      ],
+      "id": "d71b36c4-b2d8-4414-9870-7c4a147c86e3",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT index, name, stock\nFROM amazon_dataset\nORDER BY name\nLIMIT {{ $json.limit }}\nOFFSET {{ $json.offset }};",
+        "options": {}
+      },
+      "name": "Postgres Product1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        -1300,
+        2560
+      ],
+      "id": "b088bca4-c118-417f-a555-56d99445aa39",
+      "credentials": {
+        "postgres": {
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "name",
+              "field2": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Merge By Name1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -1080,
+        2460
+      ],
+      "id": "bd4ccc76-d599-49dc-9304-4949cd049f59"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ambil semua data dari node Postgres Sales dan Postgres Product\nconst salesAll = $('Postgres Sales1').all().map(i => i.json);\nconst productsAll = $('Postgres Product1').all().map(i => i.json);\n\nconst output = [];\n\nfor (const product of productsAll) {\n  // Cari data sales yang cocok berdasarkan name\n  const matchedSales = salesAll.find(sale => sale.name === product.name) || {};\n\n  const stock = product.stock !== undefined ? Number(product.stock) : 0;\n  const avgDailySold = matchedSales.avg_daily_sold_3days !== undefined ? Number(matchedSales.avg_daily_sold_3days) : 0;\n\n  const predictedStock = stock - (avgDailySold * 3);\n\n  output.push({\n    json: {\n      id: product.index || Math.floor(Math.random() * 100000),\n      name: product.name || '-',\n      current_stock: stock,\n      predicted_sales_tomorrow: Number(avgDailySold.toFixed(2)),\n      predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n      status: predictedStock > 0 ? 'cukup' : 'kurang'\n    }\n  });\n}\n\nreturn output;"
+      },
+      "name": "Prediksi Stok1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -860,
+        2460
+      ],
+      "id": "e3ea8ff8-da54-43fc-9edb-9c17d435769f"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all items from the current batch\nconst currentBatchItems = $input.all();\n\n// Get the AI response\nconst aiNode = $node[\"AI Agent - Assess Risk in Batch2\"];\nlet aiResponseText = '';\n\n// Handle different AI response formats\nif (aiNode && aiNode.json) {\n  if (aiNode.json.output) {\n    aiResponseText = aiNode.json.output;\n  } else if (aiNode.json.text) {\n    aiResponseText = aiNode.json.text;\n  } else if (aiNode.json.response) {\n    aiResponseText = aiNode.json.response;\n  } else {\n    aiResponseText = JSON.stringify(aiNode.json);\n  }\n}\n\nlet aiAssessments = [];\ntry {\n  // Clean the response text and extract JSON\n  const cleanedResponse = aiResponseText.trim();\n  \n  // Try to extract JSON array from the response\n  const jsonMatch = cleanedResponse.match(/\\[[\\s\\S]*\\]/);\n  if (jsonMatch) {\n    aiAssessments = JSON.parse(jsonMatch[0]);\n  } else {\n    // Try parsing the entire response\n    aiAssessments = JSON.parse(cleanedResponse);\n  }\n  \n  console.log('Successfully parsed AI assessments:', aiAssessments.length, 'items');\n} catch (error) {\n  console.error('Failed to parse AI response:', error);\n  console.error('AI Response Text:', aiResponseText);\n  \n  // Create fallback assessments based on simple logic\n  aiAssessments = currentBatchItems.map(item => {\n    const product = item.json;\n    const stockRatio = product.current_stock / (product.predicted_sales_tomorrow || 1);\n    \n    let assessment = \"Manual review required - AI parsing failed. \";\n    if (stockRatio < 1) {\n      assessment += \"Critical: Stock insufficient for predicted demand.\";\n    } else if (stockRatio < 2) {\n      assessment += \"High Risk: Stock running low.\";\n    } else if (stockRatio < 4) {\n      assessment += \"Medium Risk: Monitor stock levels.\";\n    } else {\n      assessment += \"Low Risk: Adequate stock available.\";\n    }\n    \n    return {\n      id: product.id,\n      aiAssessment: assessment\n    };\n  });\n}\n\n// Create a lookup map for AI assessments\nconst assessmentMap = new Map(aiAssessments.map(item => [item.id, item.aiAssessment]));\n\n// Process each item in the batch\nconst finalResults = currentBatchItems.map(item => {\n  const product = item.json;\n  \n  // Calculate risk level based on stock ratios\n  const stockRatio = product.current_stock / (product.predicted_sales_tomorrow || 1);\n  let riskLevel = 'Unknown';\n  if (stockRatio < 1) riskLevel = 'Critical';\n  else if (stockRatio < 2) riskLevel = 'High';\n  else if (stockRatio < 4) riskLevel = 'Medium';\n  else riskLevel = 'Low';\n  \n  return {\n    productId: product.id,\n    productName: product.name,\n    currentStock: product.current_stock,\n    predictedSalesTomorrow: product.predicted_sales_tomorrow,\n    predictedStockAfter3Days: product.predicted_stock_after_3days,\n    status: product.status,\n    stockToSalesRatio: parseFloat(stockRatio.toFixed(2)),\n    riskLevel: riskLevel,\n    aiAssessment: assessmentMap.get(product.id) || \"Assessment not available\",\n    batchProcessedAt: new Date().toISOString()\n  };\n});\n\nreturn finalResults;"
+      },
+      "id": "c2f0e7ed-ed09-420e-a131-666a7fd4203f",
+      "name": "Code - Combine Data & AI Assessment1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -264,
+        2460
       ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agentic-ai-2-paging",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1740,
+        2460
+      ],
+      "id": "a454a878-2625-4efb-b1b7-6529c6eebede",
+      "name": "Webhook3",
+      "webhookId": "e43e8bfb-c727-475c-8f0f-7a50e16b1772"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a stock analysis API. You will receive a JSON array of products with their current stock and predicted sales. For each product, assess the stock situation and provide a risk level.\n\nYour response MUST be a valid JSON array, with one object for each product from the input. Each object must contain the \"id\" and a new field called \"aiAssessment\".\n\nInput Data:\n{{ $json }}\n\nAnalysis Guidelines:\n- If predicted_sales_tomorrow > current_stock: \"Critical Risk - Stock insufficient for predicted demand\"\n- If predicted_sales_tomorrow > (current_stock * 0.8): \"High Risk - Stock running low\"\n- If predicted_sales_tomorrow > (current_stock * 0.5): \"Medium Risk - Monitor stock levels\"\n- If predicted_sales_tomorrow < (current_stock * 0.3): \"Low Risk - Adequate stock available\"\n- Consider product name for seasonal or demand patterns\n\nExample Response:\n[\n  {\n    \"id\": 1,\n    \"aiAssessment\": \"High Risk - Current stock of 25 units may not meet predicted demand of 22 units. Recommend immediate restocking.\"\n  }\n]\n\nProcess all products in the input and return only the JSON array of results.",
+        "options": {
+          "systemMessage": "You are a precise stock analysis system that returns only valid JSON arrays with detailed risk assessments."
+        }
+      },
+      "id": "1cd40d8f-24e6-4494-b964-3768c2985142",
+      "name": "AI Agent - Assess Risk in Batch2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        2460
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"AI-powered stock prediction analysis completed\",\n  \"processedAt\": \"{{ new Date().toISOString() }}\",\n  \"pagination\": {\n    \"page\": {{ $('Function Date Processing & Paging').first().json.page }},\n    \"limit\": {{ $('Function Date Processing & Paging').first().json.limit }},\n    \"offset\": {{ $('Function Date Processing & Paging').first().json.offset }},\n    \"totalProcessedInThisPage\": {{ $items().length }}\n  },\n  \"summary\": {\n    \"totalProductsProcessed\": {{ $items().length }},\n    \"criticalRisk\": {{ $items().filter(item => item.json.riskLevel === 'Critical').length }},\n    \"highRisk\": {{ $items().filter(item => item.json.riskLevel === 'High').length }},\n    \"mediumRisk\": {{ $items().filter(item => item.json.riskLevel === 'Medium').length }},\n    \"lowRisk\": {{ $items().filter(item => item.json.riskLevel === 'Low').length }}\n  },\n  \"data\": {{ JSON.stringify($items().map(item => item.json)) }}\n}",
+        "options": {}
+      },
+      "name": "Respond to Webhook3",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        -44,
+        2460
+      ],
+      "id": "7e115666-aa2f-4617-bf9d-dfe1c68d0e62"
     }
   ],
   "connections": {
@@ -338,7 +806,7 @@
       "main": [
         [
           {
-            "node": "PostgreSQL - Get Products & Predicted Sales",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
@@ -347,24 +815,6 @@
     },
     "PostgreSQL - Get Products & Predicted Sales": {
       "main": [
-        [
-          {
-            "node": "Split in Batches",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Split in Batches": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ],
         [
           {
             "node": "AI Agent - Assess Risk in Batch",
@@ -389,7 +839,264 @@
       "main": [
         [
           {
-            "node": "Split in Batches",
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Assess Risk in Batch",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Assess Risk in Batch",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "DebugHelper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DebugHelper": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL - Get Products & Predicted Sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent - Assess Risk in Batch1": {
+      "main": [
+        [
+          {
+            "node": "Code - Combine Data & AI Assessment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Function Date Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Combine Data & AI Assessment": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prediksi Stok": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Assess Risk in Batch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge By Name": {
+      "main": [
+        [
+          {
+            "node": "Prediksi Stok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Product": {
+      "main": [
+        [
+          {
+            "node": "Merge By Name",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Postgres Sales": {
+      "main": [
+        [
+          {
+            "node": "Merge By Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function Date Processing": {
+      "main": [
+        [
+          {
+            "node": "Postgres Product",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres Sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function Date Processing & Paging": {
+      "main": [
+        [
+          {
+            "node": "Postgres Sales1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres Product1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Sales1": {
+      "main": [
+        [
+          {
+            "node": "Merge By Name1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Product1": {
+      "main": [
+        [
+          {
+            "node": "Merge By Name1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge By Name1": {
+      "main": [
+        [
+          {
+            "node": "Prediksi Stok1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prediksi Stok1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Assess Risk in Batch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Combine Data & AI Assessment1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "Function Date Processing & Paging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Assess Risk in Batch2": {
+      "main": [
+        [
+          {
+            "node": "Code - Combine Data & AI Assessment1",
             "type": "main",
             "index": 0
           }
@@ -405,7 +1112,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "95950ea0-34b0-4e24-8d96-3c1f5814c259",
+  "versionId": "52c0a7e0-ba3e-4977-b4db-dc6c07ec702f",
   "triggerCount": 0,
   "tags": []
 }
