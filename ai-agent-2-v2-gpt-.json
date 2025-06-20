@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-22T09:08:15.725Z",
-  "updatedAt": "2025-05-26T15:43:31.564Z",
+  "updatedAt": "2025-06-20T08:03:35.920Z",
   "id": "rFx3U1bQLZ61dZks",
   "name": "ai agent 2 v2 gpt",
   "active": false,
@@ -16,40 +16,40 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -440,
-        -20
+        -1300,
+        4285
       ],
-      "id": "df004e70-4ef1-47ae-a1f7-cafade7fcc3d",
-      "name": "Webhook",
-      "webhookId": "e43e8bfb-c727-475c-8f0f-7a50e16b1772"
+      "id": "c32bcf66-ae78-441b-804e-7b4910abdd0a",
+      "name": "Webhook6",
+      "webhookId": "0909f34c-da13-493d-984e-901eb3972a1e"
     },
     {
       "parameters": {
-        "jsCode": "// Ambil parameter paging dan tanggal dari input webhook\nconst inputDate = $input.first().json.body.date; // format: 'YYYY-MM-DD'\nif (!inputDate) throw new Error('Tanggal tidak ditemukan di input JSON.');\n\nconst page = $input.first().json.body.page ? Number($input.first().json.body.page) : 1;\nconst limit = $input.first().json.body.limit ? Number($input.first().json.body.limit) : 5000;\nconst offset = (page - 1) * limit;\n\nconst today = new Date(inputDate);\nconst dateFormat = (date) => date.toISOString().split('T')[0];\n\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\nreturn [{\n  json: {\n    today: dateFormat(today),\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday),\n    page,\n    limit,\n    offset\n  }\n}];"
+        "jsCode": "// Initialize pagination parameters\nconst inputDate = $input.first().json.body.date; // format: 'YYYY-MM-DD'\nif (!inputDate) throw new Error('Date not found in input JSON.');\n\nconst batchSize = 500; // Process 500 products per batch\nconst totalRows = 384827; // Total number of products\nconst totalBatches = Math.ceil(totalRows / batchSize);\n\nconst today = new Date(inputDate);\nconst dateFormat = (date) => date.toISOString().split('T')[0];\n\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\n// Initialize workflow state\nreturn [{\n  json: {\n    inputDate: dateFormat(today),\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday),\n    currentBatch: 1,\n    totalBatches: totalBatches,\n    batchSize: batchSize,\n    totalRows: totalRows,\n    allPredictions: [], // Store all predictions\n    offset: 0\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -200,
-        -20
+        -1080,
+        4285
       ],
-      "id": "992b40a7-ee66-4fa7-8c83-2d4d635ade07",
-      "name": "Function Paging"
+      "id": "f60b9820-3662-4ff7-8a8d-6f885234579d",
+      "name": "Initialize Pagination1"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT name, SUM(quantity_sold) AS total_sold_3days, AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $json.startDate }}' AND date <= '{{ $json.endDate }}'\nGROUP BY name\nORDER BY name\nLIMIT {{ $json.limit }}\nOFFSET {{ $json.offset }};",
+        "query": "SELECT index, name, stock\nFROM amazon_dataset\nORDER BY index\nLIMIT {{ $json.batchSize }}\nOFFSET {{ $json.offset }};",
         "options": {}
       },
-      "name": "Postgres Sales",
+      "name": "Postgres Product Batch1",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        0,
-        -80
+        -860,
+        4285
       ],
-      "id": "b44b3afd-9bac-4807-8713-bfde504e9ff0",
+      "id": "0a56c954-e747-4d99-a3dc-acba3994836f",
       "credentials": {
         "postgres": {
           "id": "ufLqaq0vJt3QUgxO",
@@ -60,17 +60,17 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT index, name, stock\nFROM amazon_dataset\nORDER BY name\nLIMIT {{ $json.limit }}\nOFFSET {{ $json.offset }};",
+        "query": "SELECT name, SUM(quantity_sold) AS total_sold_3days, AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $('Initialize Pagination1').item.json.startDate }}' AND date <= '{{ $('Initialize Pagination1').item.json.endDate }}'\nAND name IN (\n  SELECT name \n  FROM amazon_dataset \n  ORDER BY index \n  LIMIT {{ $('Initialize Pagination1').item.json.batchSize }}\n  OFFSET {{ $('Initialize Pagination1').item.json.offset }}\n)\nGROUP BY name\nORDER BY name;",
         "options": {}
       },
-      "name": "Postgres Product",
+      "name": "Postgres Sales Batch1",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        0,
-        100
+        -640,
+        4360
       ],
-      "id": "4a1b2510-2f70-4f05-ad8d-6c5f5f724c5e",
+      "id": "95138656-1317-4690-b369-8cb8c8475c4f",
       "credentials": {
         "postgres": {
           "id": "ufLqaq0vJt3QUgxO",
@@ -91,118 +91,237 @@
         },
         "options": {}
       },
-      "name": "Merge By Name",
+      "name": "Merge Product and Sales1",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
       "position": [
-        200,
-        -20
+        -420,
+        4210
       ],
-      "id": "9c204fb2-0530-4c9f-9b85-6ab583f06372"
+      "id": "74da7f73-d9ac-467e-bb19-11615425b3cf"
     },
     {
       "parameters": {
-        "jsCode": "// Ambil semua data dari node Postgres Sales dan Postgres Product\nconst salesAll = $('Postgres Sales').all().map(i => i.json);\nconst productsAll = $('Postgres Product').all().map(i => i.json);\n\nconst output = [];\n\nfor (const product of productsAll) {\n  // Cari data sales yang cocok berdasarkan name\n  const matchedSales = salesAll.find(sale => sale.name === product.name) || {};\n\n  const stock = product.stock !== undefined ? Number(product.stock) : 0;\n  const avgDailySold = matchedSales.avg_daily_sold_3days !== undefined ? Number(matchedSales.avg_daily_sold_3days) : 0;\n\n  const predictedStock = stock - (avgDailySold * 3);\n\n  output.push({\n    json: {\n      name: product.name || '-',\n      stock: stock,\n      avg_daily_sold_3days: avgDailySold,\n      predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n      status: predictedStock > 0 ? 'cukup' : 'kurang'\n    }\n  });\n}\n\nreturn output;\n"
+        "jsCode": "// Get merged data and pagination info\nconst mergedData = $input.all().map(i => i.json);\nconst paginationData = $('Initialize Pagination1').first().json;\n\nconst batchPredictions = [];\n\nfor (const item of mergedData) {\n  const stock = item.stock !== undefined ? Number(item.stock) : 0;\n  const avgDailySold = item.avg_daily_sold_3days !== undefined ? Number(item.avg_daily_sold_3days) : 0;\n\n  const predictedStock = stock - (avgDailySold * 3);\n\n  batchPredictions.push({\n    index: item.index || 0,\n    name: item.name || '-',\n    stock: stock,\n    avg_daily_sold_3days: avgDailySold,\n    predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n    status: predictedStock > 0 ? 'sufficient' : 'insufficient'\n  });\n}\n\n// Combine with existing predictions\nconst allPredictions = [...paginationData.allPredictions, ...batchPredictions];\n\nreturn [{\n  json: {\n    ...paginationData,\n    batchPredictions: batchPredictions,\n    allPredictions: allPredictions,\n    processedCount: allPredictions.length\n  }\n}];"
       },
-      "name": "Prediksi Stok",
+      "name": "Batch Prediction1",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        380,
-        -20
+        -200,
+        4210
       ],
-      "id": "20f260d6-f120-441b-b596-af39a345f122"
+      "id": "fd09f7b4-85ba-478c-bb33-7afe69d405da"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c2b6cbd1-a12f-4b77-81bc-16f67d5dff67",
+              "leftValue": "={{ $json.currentBatch }}",
+              "rightValue": "={{ $json.totalBatches }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Check More Batches1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        20,
+        4210
+      ],
+      "id": "02204c1e-47b5-4d93-a4f5-5554a05a5351"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare next batch\nconst data = $input.first().json;\n\nconst nextBatch = data.currentBatch + 1;\nconst nextOffset = data.currentBatch * data.batchSize;\n\nreturn [{\n  json: {\n    ...data,\n    currentBatch: nextBatch,\n    offset: nextOffset\n  }\n}];"
+      },
+      "name": "Prepare Next Batch1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        4385
+      ],
+      "id": "ae42c178-971a-4aa5-8af0-dde0570d3b5a"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Final processing - save all predictions to JSON\nconst data = $input.first().json;\nconst allPredictions = data.allPredictions;\n\n// Create final JSON structure\nconst finalResult = {\n  processedAt: '2025-06-19 16:56:53',\n  processedBy: 'Cleign1',\n  date: data.inputDate,\n  totalProcessed: allPredictions.length,\n  totalBatches: data.totalBatches,\n  batchSize: data.batchSize,\n  summary: {\n    sufficient: allPredictions.filter(p => p.status === 'sufficient').length,\n    insufficient: allPredictions.filter(p => p.status === 'insufficient').length\n  },\n  predictions: allPredictions\n};\n\nreturn [{\n  json: finalResult\n}];"
+      },
+      "name": "Final Processing1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        4160
+      ],
+      "id": "dbd5126b-2f2b-41bc-98b4-736befa4f485"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/files/stock_prediction_{{ $json.date }}.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        460,
+        4160
+      ],
+      "id": "53cee7f8-14b9-4218-b34e-20cf64aaa029",
+      "name": "Save to JSON File1"
     },
     {
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {}
       },
-      "name": "Respond to Webhook",
+      "name": "Respond to Webhook3",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.2,
       "position": [
-        580,
-        -20
+        680,
+        4160
       ],
-      "id": "1e6d1b62-5e8e-45f3-9433-ece0b6003bf1"
+      "id": "ebbf9d20-0197-4b45-971d-bebb83b9e68c"
     }
   ],
   "connections": {
-    "Webhook": {
+    "Webhook6": {
       "main": [
         [
           {
-            "node": "Function Paging",
+            "node": "Initialize Pagination1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Function Paging": {
+    "Initialize Pagination1": {
       "main": [
         [
           {
-            "node": "Postgres Sales",
+            "node": "Postgres Product Batch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Product Batch1": {
+      "main": [
+        [
+          {
+            "node": "Postgres Sales Batch1",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Postgres Product",
+            "node": "Merge Product and Sales1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Postgres Sales": {
+    "Postgres Sales Batch1": {
       "main": [
         [
           {
-            "node": "Merge By Name",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres Product": {
-      "main": [
-        [
-          {
-            "node": "Merge By Name",
+            "node": "Merge Product and Sales1",
             "type": "main",
             "index": 1
           }
         ]
       ]
     },
-    "Merge By Name": {
+    "Merge Product and Sales1": {
       "main": [
         [
           {
-            "node": "Prediksi Stok",
+            "node": "Batch Prediction1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Prediksi Stok": {
+    "Batch Prediction1": {
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Check More Batches1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Respond to Webhook": {
+    "Check More Batches1": {
       "main": [
-        []
+        [
+          {
+            "node": "Prepare Next Batch1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Final Processing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Next Batch1": {
+      "main": [
+        [
+          {
+            "node": "Postgres Product Batch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Processing1": {
+      "main": [
+        [
+          {
+            "node": "Save to JSON File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to JSON File1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -214,7 +333,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "347f95f8-376e-4a76-95ef-f124a2a51ed8",
-  "triggerCount": 0,
+  "versionId": "ef2df46d-cec4-4ffa-887c-bf5c1d118956",
+  "triggerCount": 1,
   "tags": []
 }
