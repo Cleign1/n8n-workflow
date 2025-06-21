@@ -1,9 +1,9 @@
 {
-  "createdAt": "2025-05-31T07:58:49.584Z",
-  "updatedAt": "2025-06-19T14:13:30.717Z",
-  "id": "ZUWI4WKB1w7PNOQB",
+  "createdAt": "2025-06-21T08:23:34.139Z",
+  "updatedAt": "2025-06-21T08:23:45.790Z",
+  "id": "3aX0f1uOThdyORJ6",
   "name": "ai_agent_1_versi_new",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -13,10 +13,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        740,
-        720
+        -1260,
+        200
       ],
-      "id": "e28ff3a3-fc2d-4f4e-9710-8e1df00963e1",
+      "id": "78a5921e-4e4e-4661-b720-42ec825ed8b7",
       "name": "Prepare Product1"
     },
     {
@@ -28,17 +28,11 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        940,
-        720
+        -1040,
+        200
       ],
-      "id": "1d51131b-60d1-49d4-b0f5-f5b348975a3d",
-      "name": "Get Product Data1",
-      "credentials": {
-        "postgres": {
-          "id": "ufLqaq0vJt3QUgxO",
-          "name": "Postgres account 2"
-        }
-      }
+      "id": "329b6d4c-7935-45d7-9a1e-548f6cfec586",
+      "name": "Get Product Data1"
     },
     {
       "parameters": {
@@ -47,10 +41,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1420,
-        720
+        -600,
+        100
       ],
-      "id": "912bcfad-b165-403d-85c2-26a1862bb3f8",
+      "id": "21a728ac-e3d8-4524-9285-620e3a14125e",
       "name": "Process Sales & Identify Issues1",
       "alwaysOutputData": true
     },
@@ -82,10 +76,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1620,
-        720
+        -380,
+        100
       ],
-      "id": "a83e2c6d-ff17-44de-a19b-103c6242a894",
+      "id": "8a3f2755-affa-4700-b522-80bd5421a2d8",
       "name": "Route Data1"
     },
     {
@@ -97,10 +91,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        2060,
-        720
+        60,
+        100
       ],
-      "id": "3e31103f-ef8b-4d05-bfce-6a2399082095",
+      "id": "1f182ed5-e65e-4e74-ae53-b3c17f96057e",
       "name": "Respond to Webhook1"
     },
     {
@@ -110,10 +104,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1840,
-        800
+        -160,
+        200
       ],
-      "id": "59e92b35-59ac-4492-8cbb-369de991ac06",
+      "id": "5771498a-4e2e-4476-8750-dced75560716",
       "name": "Process Sales and identify Issues"
     },
     {
@@ -226,17 +220,11 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1840,
-        660
+        -160,
+        0
       ],
-      "id": "23a8bdd5-30c9-4626-a67d-1de573ae6894",
-      "name": "Update Produk Database1",
-      "credentials": {
-        "postgres": {
-          "id": "ufLqaq0vJt3QUgxO",
-          "name": "Postgres account 2"
-        }
-      }
+      "id": "2019e88d-ed5c-4db1-a7bf-9f95c19600a7",
+      "name": "Update Produk Database1"
     },
     {
       "parameters": {
@@ -286,10 +274,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        220,
-        740
+        -1700,
+        300
       ],
-      "id": "7a517e68-1254-467b-8440-ea858346d4b3",
+      "id": "5f821423-f55d-4793-b3de-94d0a187947f",
       "name": "If"
     },
     {
@@ -301,10 +289,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        520,
-        920
+        -1480,
+        400
       ],
-      "id": "59f02758-7408-4b86-8772-be6fc918ca21",
+      "id": "6c9313b5-5edc-4ffe-ac9a-19c4ccb4459c",
       "name": "Error"
     },
     {
@@ -324,10 +312,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        520,
-        720
+        -1480,
+        200
       ],
-      "id": "269c0979-5105-4a08-ac93-e989c048f1a9",
+      "id": "3c1e08ea-a961-4f83-a165-9597e6d62f0c",
       "name": "Edit Fields"
     },
     {
@@ -340,10 +328,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -80,
-        740
+        -1920,
+        400
       ],
-      "id": "0049ddb7-9640-479e-955e-aa4a504ca551",
+      "id": "fabfd79f-575f-4a23-8444-3784c1df9af6",
       "name": "Webhook",
       "webhookId": "a90e3eaa-296f-48ff-9f22-67076d7720f8"
     },
@@ -358,10 +346,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        160,
-        900
+        -1700,
+        500
       ],
-      "id": "c4d3bd65-93e4-44c4-abb7-3626ba35c4a4",
+      "id": "a551d0fa-2a64-4dae-b665-31d1a8d04775",
       "name": "Response Status"
     },
     {
@@ -375,10 +363,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        1420,
-        900
+        -600,
+        300
       ],
-      "id": "08cfd883-5533-41ff-a412-b054d78ea042",
+      "id": "8d53c8cf-2509-48f9-8948-1b189f4dd2d6",
       "name": "Respond to Webhook2"
     },
     {
@@ -409,10 +397,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1140,
-        720
+        -820,
+        200
       ],
-      "id": "b8b2eea3-53ee-4490-b0f3-cbbef6ed4802",
+      "id": "2947ee60-6c73-4b78-8c48-18c6142143eb",
       "name": "Cek apakah nama produk sama dengan database"
     }
   ],
@@ -558,11 +546,9 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {},
-  "versionId": "e9859694-92e4-437c-936e-fe1ccc9d6f8f",
-  "triggerCount": 1,
+  "versionId": "dc9248c5-8d5e-4a23-8095-6ced2059ce0d",
+  "triggerCount": 0,
   "tags": []
 }
