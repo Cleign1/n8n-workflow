@@ -1,8 +1,8 @@
 {
-  "createdAt": "2025-05-22T09:08:15.725Z",
-  "updatedAt": "2025-06-20T08:03:35.920Z",
-  "id": "rFx3U1bQLZ61dZks",
-  "name": "ai agent 2 v2 gpt",
+  "createdAt": "2025-06-21T08:22:56.275Z",
+  "updatedAt": "2025-06-21T08:22:56.275Z",
+  "id": "bJejuVHXQ3xZGFBb",
+  "name": "ai-agent-2-v2-gpt",
   "active": false,
   "isArchived": false,
   "nodes": [
@@ -16,10 +16,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1300,
-        4285
+        -1540,
+        140
       ],
-      "id": "c32bcf66-ae78-441b-804e-7b4910abdd0a",
+      "id": "c22ce5ca-8b6a-446f-958f-0c78816cf7ab",
       "name": "Webhook6",
       "webhookId": "0909f34c-da13-493d-984e-901eb3972a1e"
     },
@@ -30,10 +30,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1080,
-        4285
+        -1320,
+        140
       ],
-      "id": "f60b9820-3662-4ff7-8a8d-6f885234579d",
+      "id": "386b73ab-ef1a-42d4-9322-ff7f17c480b6",
       "name": "Initialize Pagination1"
     },
     {
@@ -46,16 +46,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        -860,
-        4285
+        -1100,
+        140
       ],
-      "id": "0a56c954-e747-4d99-a3dc-acba3994836f",
-      "credentials": {
-        "postgres": {
-          "id": "ufLqaq0vJt3QUgxO",
-          "name": "Postgres account 2"
-        }
-      }
+      "id": "2498830b-fd19-4647-b643-44873b537b2f"
     },
     {
       "parameters": {
@@ -67,16 +61,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        -640,
-        4360
+        -880,
+        200
       ],
-      "id": "95138656-1317-4690-b369-8cb8c8475c4f",
-      "credentials": {
-        "postgres": {
-          "id": "ufLqaq0vJt3QUgxO",
-          "name": "Postgres account 2"
-        }
-      }
+      "id": "85066483-ba4f-4cc0-9382-9288d5a25397"
     },
     {
       "parameters": {
@@ -95,10 +83,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
       "position": [
-        -420,
-        4210
+        -660,
+        60
       ],
-      "id": "74da7f73-d9ac-467e-bb19-11615425b3cf"
+      "id": "a26eccc1-9843-407d-bc10-12904950727e"
     },
     {
       "parameters": {
@@ -108,10 +96,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -200,
-        4210
+        -440,
+        60
       ],
-      "id": "fd09f7b4-85ba-478c-bb33-7afe69d405da"
+      "id": "6ec4edbd-ab2f-4998-82fa-62e0aadd67ee"
     },
     {
       "parameters": {
@@ -140,10 +128,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        20,
-        4210
+        -220,
+        60
       ],
-      "id": "02204c1e-47b5-4d93-a4f5-5554a05a5351"
+      "id": "d35ae804-08c0-49a8-b445-e94713f66e6b"
     },
     {
       "parameters": {
@@ -153,10 +141,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        240,
-        4385
+        0,
+        240
       ],
-      "id": "ae42c178-971a-4aa5-8af0-dde0570d3b5a"
+      "id": "5f4d72e5-7ec2-461e-8f2b-92466cd93e90"
     },
     {
       "parameters": {
@@ -166,10 +154,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        240,
-        4160
+        0,
+        0
       ],
-      "id": "dbd5126b-2f2b-41bc-98b4-736befa4f485"
+      "id": "fe209dd6-ae4f-4be1-af28-fb291e93191b"
     },
     {
       "parameters": {
@@ -180,10 +168,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        460,
-        4160
+        220,
+        0
       ],
-      "id": "53cee7f8-14b9-4218-b34e-20cf64aaa029",
+      "id": "5a2d7456-4ca2-44ec-8233-8c2ef78fb9fd",
       "name": "Save to JSON File1"
     },
     {
@@ -195,10 +183,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.2,
       "position": [
-        680,
-        4160
+        440,
+        0
       ],
-      "id": "ebbf9d20-0197-4b45-971d-bebb83b9e68c"
+      "id": "366b3e3e-0382-4ce6-be11-1d94c80c5ded"
     }
   ],
   "connections": {
@@ -329,11 +317,9 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {},
-  "versionId": "ef2df46d-cec4-4ffa-887c-bf5c1d118956",
-  "triggerCount": 1,
+  "versionId": "8afa8925-285b-4763-8270-5ef430638ae4",
+  "triggerCount": 0,
   "tags": []
 }
