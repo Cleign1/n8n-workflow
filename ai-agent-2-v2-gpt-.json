@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-06-21T08:22:56.275Z",
-  "updatedAt": "2025-06-21T08:22:56.275Z",
+  "updatedAt": "2025-06-21T15:48:13.921Z",
   "id": "bJejuVHXQ3xZGFBb",
   "name": "ai-agent-2-v2-gpt",
   "active": false,
@@ -8,33 +8,124 @@
   "nodes": [
     {
       "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) as total_rows FROM amazon_dataset;",
+        "options": {}
+      },
+      "name": "Get Total Rows",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        -2220,
+        760
+      ],
+      "id": "4b07249a-cd1b-40e1-b749-e406b3a7e51f",
+      "credentials": {
+        "postgres": {
+          "id": "khc9nZXORM0xAEhP",
+          "name": "amazon_product"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare JSON content for writing\nconst data = $input.first().json;\nconst batchResult = data.batchResult;\n\nlet jsonContent;\n\nif (data.isFirstBatch) {\n  // First batch: create complete JSON structure\n  const fileStructure = {\n    processedAt: new Date().toISOString().replace('T', ' ').substring(0, 19),\n    processedBy: 'Cleign1',\n    taskId: data.taskId,\n    date: data.inputDate,\n    totalRows: data.totalRows,\n    totalBatches: data.totalBatches,\n    batchSize: data.batchSize,\n    batches: [batchResult]\n  };\n  \n  jsonContent = JSON.stringify(fileStructure, null, 2);\n} else {\n  // Subsequent batches: prepare batch data to append\n  jsonContent = ',\\n    ' + JSON.stringify(batchResult, null, 4).replace(/\\n/g, '\\n    ');\n}\n\nreturn [{\n  json: {\n    ...data,\n    jsonContent: jsonContent\n  }\n}];"
+      },
+      "name": "Prepare JSON Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        585
+      ],
+      "id": "414376fd-43e6-4920-9441-013479d7d069"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "first-batch-check",
+              "leftValue": "={{ $json.isFirstBatch }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            },
+            {
+              "id": "b707253e-63e8-4d6c-a55e-e5aca9e5c688",
+              "leftValue": "={{ $json.batchResult.batchNumber }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "name": "Is First Batch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        585
+      ],
+      "id": "7cb112be-90c4-46d7-9aa3-0e7c029e76ef"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $json.fileName }}",
+        "dataPropertyName": "jsonContent",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        685
+      ],
+      "id": "08e89e67-0b2c-4646-b7c2-483cb2938c4b",
+      "name": "Append Batch"
+    },
+    {
+      "parameters": {
         "httpMethod": "POST",
         "path": "agentic-ai-2-paging",
-        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1540,
-        140
+        -2440,
+        760
       ],
-      "id": "c22ce5ca-8b6a-446f-958f-0c78816cf7ab",
-      "name": "Webhook6",
+      "id": "d7222a6a-72f4-4fad-9688-ac7dc2d50677",
+      "name": "Webhook",
       "webhookId": "0909f34c-da13-493d-984e-901eb3972a1e"
     },
     {
       "parameters": {
-        "jsCode": "// Initialize pagination parameters\nconst inputDate = $input.first().json.body.date; // format: 'YYYY-MM-DD'\nif (!inputDate) throw new Error('Date not found in input JSON.');\n\nconst batchSize = 500; // Process 500 products per batch\nconst totalRows = 384827; // Total number of products\nconst totalBatches = Math.ceil(totalRows / batchSize);\n\nconst today = new Date(inputDate);\nconst dateFormat = (date) => date.toISOString().split('T')[0];\n\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\n// Initialize workflow state\nreturn [{\n  json: {\n    inputDate: dateFormat(today),\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday),\n    currentBatch: 1,\n    totalBatches: totalBatches,\n    batchSize: batchSize,\n    totalRows: totalRows,\n    allPredictions: [], // Store all predictions\n    offset: 0\n  }\n}];"
+        "jsCode": "// Initialize pagination parameters with dynamic total rows\nconst inputData = $('Webhook').first().json.body;\nlet inputDate = $('Webhook').first().json.body.prediction_date;\nconst taskId = $('Webhook').first().json.body.task_id;\n\nif (!inputDate) {\n  // Use current date if no date provided\n  inputDate = '2025-04-04'; // Updated to current date\n}\n\n// Get total rows from database - fix the data access\nconst totalRowsResult = $input.first().json.total_rows;\nconst totalRows = parseInt(totalRowsResult);\nconst batchSize = 500;\nconst totalBatches = Math.ceil(totalRows / batchSize);\n\n// Simple and reliable date formatting function\nconst dateFormat = (dateInput) => {\n  let date;\n  \n  if (typeof dateInput === 'string') {\n    // If it's already in YYYY-MM-DD format, return as-is\n    if (/^\\d{4}-\\d{2}-\\d{2}$/.test(dateInput)) {\n      return dateInput;\n    }\n    // Parse string date\n    date = new Date(dateInput + 'T00:00:00Z');\n  } else {\n    date = dateInput;\n  }\n  \n  // Format to YYYY-MM-DD\n  const year = date.getUTCFullYear();\n  const month = String(date.getUTCMonth() + 1).padStart(2, '0');\n  const day = String(date.getUTCDate()).padStart(2, '0');\n  return `${year}-${month}-${day}`;\n};\n\n// Calculate dates using string manipulation for reliability\nconst todayFormatted = dateFormat(inputDate);\n\n// Parse the date properly for calculations\nconst todayParts = todayFormatted.split('-');\nconst today = new Date(parseInt(todayParts[0]), parseInt(todayParts[1]) - 1, parseInt(todayParts[2]));\n\nconst date3DaysAgo = new Date(today);\ndate3DaysAgo.setDate(today.getDate() - 3);\n\nconst yesterday = new Date(today);\nyesterday.setDate(today.getDate() - 1);\n\n// Initialize workflow state\nreturn [{\n  json: {\n    taskId: taskId,\n    inputDate: todayFormatted,\n    startDate: dateFormat(date3DaysAgo),\n    endDate: dateFormat(yesterday),\n    currentBatch: 1,\n    totalBatches: totalBatches,\n    batchSize: batchSize,\n    totalRows: totalRows,\n    offset: 0,\n    fileName: `/files/stock_prediction_${todayFormatted}.json`,\n    isFirstBatch: true\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1320,
-        140
+        -2000,
+        760
       ],
-      "id": "386b73ab-ef1a-42d4-9322-ff7f17c480b6",
-      "name": "Initialize Pagination1"
+      "id": "3de23170-e260-4f99-8033-c4eaca80c0be",
+      "name": "Initialize Pagination"
     },
     {
       "parameters": {
@@ -42,29 +133,41 @@
         "query": "SELECT index, name, stock\nFROM amazon_dataset\nORDER BY index\nLIMIT {{ $json.batchSize }}\nOFFSET {{ $json.offset }};",
         "options": {}
       },
-      "name": "Postgres Product Batch1",
+      "name": "Postgres Product Batch",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        -1100,
-        140
+        -1780,
+        660
       ],
-      "id": "2498830b-fd19-4647-b643-44873b537b2f"
+      "id": "f96faea4-f7c5-4f36-b7f9-5e2a670eda1e",
+      "credentials": {
+        "postgres": {
+          "id": "khc9nZXORM0xAEhP",
+          "name": "amazon_product"
+        }
+      }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT name, SUM(quantity_sold) AS total_sold_3days, AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $('Initialize Pagination1').item.json.startDate }}' AND date <= '{{ $('Initialize Pagination1').item.json.endDate }}'\nAND name IN (\n  SELECT name \n  FROM amazon_dataset \n  ORDER BY index \n  LIMIT {{ $('Initialize Pagination1').item.json.batchSize }}\n  OFFSET {{ $('Initialize Pagination1').item.json.offset }}\n)\nGROUP BY name\nORDER BY name;",
+        "query": "SELECT name, SUM(quantity_sold) AS total_sold_3days, AVG(quantity_sold) AS avg_daily_sold_3days\nFROM daily_sales\nWHERE date >= '{{ $('Initialize Pagination').item.json.startDate }}' AND date <= '{{ $('Initialize Pagination').item.json.endDate }}'\nAND name IN (\n  SELECT name \n  FROM amazon_dataset \n  ORDER BY index \n  LIMIT {{ $('Initialize Pagination').item.json.batchSize }}\n  OFFSET {{ $('Initialize Pagination').item.json.offset }}\n)\nGROUP BY name\nORDER BY name;",
         "options": {}
       },
-      "name": "Postgres Sales Batch1",
+      "name": "Postgres Sales Batch",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        -880,
-        200
+        -1780,
+        985
       ],
-      "id": "85066483-ba4f-4cc0-9382-9288d5a25397"
+      "id": "79d0b797-3846-4deb-84af-be9810d92d8e",
+      "credentials": {
+        "postgres": {
+          "id": "khc9nZXORM0xAEhP",
+          "name": "amazon_product"
+        }
+      }
     },
     {
       "parameters": {
@@ -79,27 +182,27 @@
         },
         "options": {}
       },
-      "name": "Merge Product and Sales1",
+      "name": "Merge Product and Sales",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
       "position": [
-        -660,
-        60
+        -1560,
+        585
       ],
-      "id": "a26eccc1-9843-407d-bc10-12904950727e"
+      "id": "f2cb06f3-ccaa-4f1c-85c6-21855fcc3b4a"
     },
     {
       "parameters": {
-        "jsCode": "// Get merged data and pagination info\nconst mergedData = $input.all().map(i => i.json);\nconst paginationData = $('Initialize Pagination1').first().json;\n\nconst batchPredictions = [];\n\nfor (const item of mergedData) {\n  const stock = item.stock !== undefined ? Number(item.stock) : 0;\n  const avgDailySold = item.avg_daily_sold_3days !== undefined ? Number(item.avg_daily_sold_3days) : 0;\n\n  const predictedStock = stock - (avgDailySold * 3);\n\n  batchPredictions.push({\n    index: item.index || 0,\n    name: item.name || '-',\n    stock: stock,\n    avg_daily_sold_3days: avgDailySold,\n    predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n    status: predictedStock > 0 ? 'sufficient' : 'insufficient'\n  });\n}\n\n// Combine with existing predictions\nconst allPredictions = [...paginationData.allPredictions, ...batchPredictions];\n\nreturn [{\n  json: {\n    ...paginationData,\n    batchPredictions: batchPredictions,\n    allPredictions: allPredictions,\n    processedCount: allPredictions.length\n  }\n}];"
+        "jsCode": "// Get merged data and pagination info\nconst mergedData = $input.all().map(i => i.json);\nconst paginationData = $('Initialize Pagination').first().json;\n\nconst batchPredictions = [];\n\n// Process predictions for current batch\nfor (const item of mergedData) {\n  const stock = item.stock !== undefined ? Number(item.stock) : 0;\n  const avgDailySold = item.avg_daily_sold_3days !== undefined ? Number(item.avg_daily_sold_3days) : 0;\n\n  const predictedStock = stock - (avgDailySold * 3);\n\n  batchPredictions.push({\n    index: item.index || 0,\n    name: item.name || '-',\n    stock: stock,\n    avg_daily_sold_3days: avgDailySold,\n    predicted_stock_after_3days: Number(predictedStock.toFixed(2)),\n    status: predictedStock > 0 ? 'sufficient' : 'insufficient'\n  });\n}\n\n// Create batch result with metadata for file writing\nconst batchResult = {\n  batchNumber: paginationData.currentBatch,\n  totalBatches: paginationData.totalBatches,\n  batchSize: paginationData.batchSize,\n  startIndex: paginationData.offset + 1,\n  endIndex: Math.min(paginationData.offset + paginationData.batchSize, paginationData.totalRows),\n  predictions: batchPredictions\n};\n\nreturn [{\n  json: {\n    ...paginationData,\n    batchResult: batchResult,\n    processedInBatch: batchPredictions.length\n  }\n}];"
       },
-      "name": "Batch Prediction1",
+      "name": "Batch Prediction",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -440,
-        60
+        -1340,
+        585
       ],
-      "id": "6ec4edbd-ab2f-4998-82fa-62e0aadd67ee"
+      "id": "5d6c245e-b8d9-4db2-89c0-d95e2c84d361"
     },
     {
       "parameters": {
@@ -107,16 +210,17 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "strict",
+            "version": 1
           },
           "conditions": [
             {
               "id": "c2b6cbd1-a12f-4b77-81bc-16f67d5dff67",
-              "leftValue": "={{ $json.currentBatch }}",
-              "rightValue": "={{ $json.totalBatches }}",
+              "leftValue": "={{ $('Is First Batch?').item.json.currentBatch }}",
+              "rightValue": "={{ $('Is First Batch?').item.json.totalBatches }}",
               "operator": {
                 "type": "number",
-                "operation": "lt"
+                "operation": "lte"
               }
             }
           ],
@@ -124,188 +228,347 @@
         },
         "options": {}
       },
-      "name": "Check More Batches1",
+      "name": "Check More Batches",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -220,
-        60
+        -20,
+        585
       ],
-      "id": "d35ae804-08c0-49a8-b445-e94713f66e6b"
+      "id": "e13c899b-3a80-4e7f-9240-e3d3703da435"
     },
     {
       "parameters": {
-        "jsCode": "// Prepare next batch\nconst data = $input.first().json;\n\nconst nextBatch = data.currentBatch + 1;\nconst nextOffset = data.currentBatch * data.batchSize;\n\nreturn [{\n  json: {\n    ...data,\n    currentBatch: nextBatch,\n    offset: nextOffset\n  }\n}];"
+        "jsCode": "// Prepare next batch\nconst data = $input.first().json;\n\nconst nextBatch = data.currentBatch + 1;\nconst nextOffset = data.currentBatch * data.batchSize;\n\nreturn [{\n  json: {\n    ...data,\n    currentBatch: nextBatch,\n    offset: nextOffset,\n    isFirstBatch: false // No longer first batch\n  }\n}];"
       },
-      "name": "Prepare Next Batch1",
+      "name": "Prepare Next Batch",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        240
+        200,
+        785
       ],
-      "id": "5f4d72e5-7ec2-461e-8f2b-92466cd93e90"
+      "id": "4d47b62f-9800-45b0-822a-aaf022dae7c6"
     },
     {
       "parameters": {
-        "jsCode": "// Final processing - save all predictions to JSON\nconst data = $input.first().json;\nconst allPredictions = data.allPredictions;\n\n// Create final JSON structure\nconst finalResult = {\n  processedAt: '2025-06-19 16:56:53',\n  processedBy: 'Cleign1',\n  date: data.inputDate,\n  totalProcessed: allPredictions.length,\n  totalBatches: data.totalBatches,\n  batchSize: data.batchSize,\n  summary: {\n    sufficient: allPredictions.filter(p => p.status === 'sufficient').length,\n    insufficient: allPredictions.filter(p => p.status === 'insufficient').length\n  },\n  predictions: allPredictions\n};\n\nreturn [{\n  json: finalResult\n}];"
+        "jsCode": "// Final processing - close JSON structure and prepare completion notification\nconst data = $input.first().json;\n\n// Close the JSON structure by appending closing brackets\nconst closingContent = '\\n  ]\\n}';\n\nreturn [{\n  json: {\n    ...data,\n    closingContent: closingContent,\n    completionMessage: {\n      task_id: data.taskId,\n      status: 'Selesai',\n      last_message: 'prediksi selesai, silahkan cek summary'\n    }\n  }\n}];"
       },
-      "name": "Final Processing1",
+      "name": "Final Processing",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        0
+        200,
+        535
       ],
-      "id": "fe209dd6-ae4f-4be1-af28-fb291e93191b"
+      "id": "541f50de-981b-449d-9d27-686b0afa4a34"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://flask.ibnukhaidar.live/",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        535
+      ],
+      "id": "758d77e4-de37-4c08-b219-a4aa13e7a339",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "binaryPropertyName": "={{ $json.jsonContent }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -680,
+        685
+      ],
+      "id": "50ff37d5-1707-4fa4-b3d9-72d69e728535",
+      "name": "Convert to File1"
     },
     {
       "parameters": {
         "operation": "write",
-        "fileName": "=/files/stock_prediction_{{ $json.date }}.json",
+        "fileName": "={{ $('Is First Batch?').item.json.fileName }}",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        220,
-        0
+        -460,
+        485
       ],
-      "id": "5a2d7456-4ca2-44ec-8233-8c2ef78fb9fd",
-      "name": "Save to JSON File1"
+      "id": "446b8e53-3574-4464-814f-84689fb00778",
+      "name": "Read/Write Files from Disk"
     },
     {
       "parameters": {
-        "respondWith": "allIncomingItems",
+        "operation": "toJson",
         "options": {}
       },
-      "name": "Respond to Webhook3",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.2,
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
       "position": [
-        440,
-        0
+        -680,
+        485
       ],
-      "id": "366b3e3e-0382-4ce6-be11-1d94c80c5ded"
+      "id": "ce87cc9a-9ad3-4b6e-92d9-6f558fd4d285",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        585
+      ],
+      "id": "200e0cb6-550e-405f-88bd-ce8482c061a1",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "operation": "append"
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        420,
+        535
+      ],
+      "id": "830881ee-6b20-4bc4-b0b7-b5868938d2c2",
+      "name": "Close JSON File",
+      "disabled": true
     }
   ],
   "connections": {
-    "Webhook6": {
+    "Get Total Rows": {
       "main": [
         [
           {
-            "node": "Initialize Pagination1",
+            "node": "Initialize Pagination",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Initialize Pagination1": {
+    "Prepare JSON Content": {
       "main": [
         [
           {
-            "node": "Postgres Product Batch1",
+            "node": "Is First Batch?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Postgres Product Batch1": {
+    "Is First Batch?": {
       "main": [
         [
           {
-            "node": "Postgres Sales Batch1",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge Product and Sales1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres Sales Batch1": {
-      "main": [
-        [
-          {
-            "node": "Merge Product and Sales1",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge Product and Sales1": {
-      "main": [
-        [
-          {
-            "node": "Batch Prediction1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Batch Prediction1": {
-      "main": [
-        [
-          {
-            "node": "Check More Batches1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check More Batches1": {
-      "main": [
-        [
-          {
-            "node": "Prepare Next Batch1",
+            "node": "Convert to File",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Final Processing1",
+            "node": "Convert to File1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Prepare Next Batch1": {
+    "Append Batch": {
       "main": [
         [
           {
-            "node": "Postgres Product Batch1",
+            "node": "Aggregate",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Final Processing1": {
+    "Webhook": {
       "main": [
         [
           {
-            "node": "Save to JSON File1",
+            "node": "Get Total Rows",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Save to JSON File1": {
+    "Initialize Pagination": {
       "main": [
         [
           {
-            "node": "Respond to Webhook3",
+            "node": "Postgres Product Batch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres Sales Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Product Batch": {
+      "main": [
+        [
+          {
+            "node": "Merge Product and Sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Sales Batch": {
+      "main": [
+        [
+          {
+            "node": "Merge Product and Sales",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Product and Sales": {
+      "main": [
+        [
+          {
+            "node": "Batch Prediction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Prediction": {
+      "main": [
+        [
+          {
+            "node": "Prepare JSON Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check More Batches": {
+      "main": [
+        [
+          {
+            "node": "Prepare Next Batch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Final Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Next Batch": {
+      "main": [
+        [
+          {
+            "node": "Postgres Product Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Processing": {
+      "main": [
+        [
+          {
+            "node": "Close JSON File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Append Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close JSON File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Check More Batches",
             "type": "main",
             "index": 0
           }
@@ -317,9 +580,11 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "pinData": {},
-  "versionId": "8afa8925-285b-4763-8270-5ef430638ae4",
-  "triggerCount": 0,
+  "versionId": "259fd97a-b148-4bd2-9193-64964c5c959f",
+  "triggerCount": 2,
   "tags": []
 }
