@@ -1,113 +1,410 @@
 {
-  "createdAt": "2025-05-19T15:51:51.799Z",
-  "updatedAt": "2025-05-24T10:29:24.953Z",
-  "id": "VDDVDsFO23bq0pcD",
+  "createdAt": "2025-06-21T08:25:27.877Z",
+  "updatedAt": "2025-06-21T08:41:21.852Z",
+  "id": "8snmaLYV0xfCTRqC",
   "name": "My workflow",
   "active": false,
   "isArchived": true,
   "nodes": [
     {
       "parameters": {
-        "options": {}
+        "filters": {},
+        "requestOptions": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.1,
+      "id": "1b92e03d-5cdc-42aa-b37c-d1711e63dc57",
+      "name": "Retrieve workflows",
+      "type": "n8n-nodes-base.n8n",
       "position": [
-        -200,
-        0
+        260,
+        20
       ],
-      "id": "1e69c018-f847-4191-89ce-408bea70a51f",
-      "name": "When chat message received",
-      "webhookId": "60181bd5-6077-4ea0-b0ad-6f2b4f29e29f"
+      "typeVersion": 1
     },
     {
       "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.9,
-      "position": [
-        20,
-        0
-      ],
-      "id": "ba67fa98-e520-4dcd-af8c-d11e421b1e73",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "projectId": {
-          "__rl": true,
-          "value": "buat-maen2-aja",
-          "mode": "list",
-          "cachedResultName": "buat maen2 aja"
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
         },
-        "modelName": "gemini-2.0-flash",
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
-      "typeVersion": 1,
+      "id": "b61ae6cb-e339-4b1b-bcf3-5e8b630de06d",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        100,
+        20
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/Cleign1",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/Cleign1/n8n-workflow"
+        },
+        "filePath": "="
+      },
+      "id": "d2da601d-2d66-4a16-8fc7-5a1c57b34f60",
+      "name": "List files from repo",
+      "type": "n8n-nodes-base.github",
       "position": [
         -60,
-        220
+        20
       ],
-      "id": "3b77cca1-fed0-4659-afd5-47f5cc5423c0",
-      "name": "Google Vertex Chat Model",
-      "credentials": {
-        "googleApi": {
-          "id": "frIS2sQR5bxxzXkA",
-          "name": "Google Service Account account"
-        }
-      }
+      "webhookId": "354d699e-44b0-4444-9d31-af7fd4ff5561",
+      "typeVersion": 1,
+      "alwaysOutputData": true
     },
     {
       "parameters": {
-        "contextWindowLength": 20
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/Cleign1",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/Cleign1/n8n-workflow"
+        },
+        "filePath": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json",
+        "fileContent": "={{ $('To base64').item.json.data }}",
+        "commitMessage": "=backup-{{ $('Commit date & file name').item.json.commitDate }}"
       },
-      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-      "typeVersion": 1.3,
+      "id": "eea6ea03-d5a2-4bf1-98a8-0207aadb6df0",
+      "name": "Update file",
+      "type": "n8n-nodes-base.github",
       "position": [
-        80,
-        220
+        1060,
+        -60
       ],
-      "id": "a395d402-d4e6-4cce-8f47-5b1f11e81a85",
-      "name": "Postgres Chat Memory",
-      "credentials": {
-        "postgres": {
-          "id": "PZXYft7euaufuQXJ",
-          "name": "Postgres account"
+      "webhookId": "27218087-8df7-474d-a39f-70cfa9c34ec8",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "https://github.com/Cleign1",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-workflow",
+          "mode": "list",
+          "cachedResultName": "n8n-workflow",
+          "cachedResultUrl": "https://github.com/Cleign1/n8n-workflow"
+        },
+        "filePath": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json",
+        "fileContent": "={{ $('To base64').item.json.data }}",
+        "commitMessage": "=backup-{{ $node['Commit date & file name'].json.commitDate }}"
+      },
+      "id": "c218e103-2324-4f4e-945a-8149c687a194",
+      "name": "Upload file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1060,
+        100
+      ],
+      "webhookId": "ce4b561b-acb9-4cd8-b76f-4928dada9674",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Aggregate').item.json.name }}",
+              "operation": "contains",
+              "value2": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json"
+            }
+          ]
         }
-      }
+      },
+      "id": "7820fa55-c4bf-4e5c-a8c7-47f3ae7c7f53",
+      "name": "Check if file exists",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        900,
+        20
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {
+          "format": true
+        }
+      },
+      "id": "2a1464de-38b1-43b8-8711-141cca9e1b00",
+      "name": "Json file",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        420,
+        20
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "id": "08fcc0f0-fc9a-4203-8fc8-67e80f4b5447",
+      "name": "To base64",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        580,
+        20
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Retrieve previous file names from Github",
+        "height": 380,
+        "width": 300,
+        "color": 5
+      },
+      "id": "9e64b960-eed1-40cf-a56d-1a30b0a1710c",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        -120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe4a36ef-9f04-40e3-99bd-cc517a49b440",
+              "name": "commitDate",
+              "type": "string",
+              "value": "={{ $now.format('dd-MM-yyyy/HH:mm') }}"
+            },
+            {
+              "id": "b0fe1bcc-e79c-4a6b-b8b4-44222c8bf4e8",
+              "name": "fileName",
+              "type": "string",
+              "value": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d8c8d41f-c40a-44ed-bbbe-e59b92176c24",
+      "name": "Commit date & file name",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        740,
+        20
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "### Retrieve and process workflows from n8n",
+        "height": 380,
+        "width": 460,
+        "color": 3
+      },
+      "id": "1ce79bed-9e43-404d-9434-478ad812c669",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        -120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Commit + edit/create files if needed",
+        "height": 380,
+        "width": 460,
+        "color": 4
+      },
+      "id": "d6740e83-4fbc-4792-8901-7727b08e801b",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        -120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "path": "backup-workflow",
+        "authentication": "basicAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        20
+      ],
+      "id": "7e7e11dd-b70a-4b35-9d35-46a1673ca4d6",
+      "name": "Webhook",
+      "webhookId": "51721210-ac0e-4a28-83d4-459c386ff7a9"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        1320,
+        20
+      ],
+      "id": "22f427ef-6dc3-487d-bd9c-bbfd2f72ee2c",
+      "name": "Respond to Webhook"
     }
   ],
   "connections": {
-    "When chat message received": {
+    "Aggregate": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Retrieve workflows",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Google Vertex Chat Model": {
-      "ai_languageModel": [
+    "Json file": {
+      "main": [
         [
           {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
+            "node": "To base64",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Postgres Chat Memory": {
-      "ai_memory": [
+    "To base64": {
+      "main": [
         [
           {
-            "node": "AI Agent",
-            "type": "ai_memory",
+            "node": "Commit date & file name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve workflows": {
+      "main": [
+        [
+          {
+            "node": "Json file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if file exists": {
+      "main": [
+        [
+          {
+            "node": "Update file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List files from repo": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit date & file name": {
+      "main": [
+        [
+          {
+            "node": "Check if file exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "List files from repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update file": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
             "index": 0
           }
         ]
@@ -122,7 +419,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "e961aab9-f499-40ec-a983-4995775c1161",
+  "versionId": "6ef48657-ea55-46ca-893d-fa8f6c84654b",
   "triggerCount": 0,
   "tags": []
 }
