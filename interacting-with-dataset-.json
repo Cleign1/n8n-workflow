@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-13T18:13:49.818Z",
-  "updatedAt": "2025-05-24T10:30:48.314Z",
+  "updatedAt": "2025-06-22T10:46:46.387Z",
   "id": "STWM7evZ8lbmVtoQ",
   "name": "interacting with dataset",
   "active": false,
@@ -222,7 +222,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "bb91d500-2223-40bc-8ab1-0d97c318655b",
+  "versionId": "2bec831f-6a8b-4845-946b-38deeb0ea67f",
   "triggerCount": 0,
   "tags": []
 }
