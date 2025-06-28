@@ -1,0 +1,36 @@
+{
+  "createdAt": "2025-06-27T10:18:26.970Z",
+  "updatedAt": "2025-06-27T10:20:38.226Z",
+  "id": "cvEEKhjUeSCSQirM",
+  "name": "ai-agent-3",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "summary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2ff35ace-d7c4-4bf9-83ad-bb08fd4cc092",
+      "name": "Webhook",
+      "webhookId": "608c5fe2-0e34-4386-8a04-eecb27923e12"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "5fa11cd8-6525-48f0-9a90-306e30e9b506",
+  "triggerCount": 0,
+  "tags": []
+}
