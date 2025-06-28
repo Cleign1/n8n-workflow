@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-05-16T16:20:25.528Z",
-  "updatedAt": "2025-05-24T10:29:30.349Z",
+  "updatedAt": "2025-06-22T10:46:39.927Z",
   "id": "BNsEqrNNRK4AfeAr",
   "name": "agentic ai v4 gemini",
   "active": false,
@@ -13,7 +13,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "c57ff8f3-9765-4db6-8700-672545c015bd",
+  "versionId": "1d3b4ee8-e21f-4228-b673-371b8a81d97e",
   "triggerCount": 0,
   "tags": []
 }
