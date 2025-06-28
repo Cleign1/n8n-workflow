@@ -1,7 +1,7 @@
 {
-  "createdAt": "2025-06-21T08:22:56.275Z",
-  "updatedAt": "2025-06-21T15:48:13.921Z",
-  "id": "bJejuVHXQ3xZGFBb",
+  "createdAt": "2025-06-22T10:47:44.219Z",
+  "updatedAt": "2025-06-22T10:47:50.589Z",
+  "id": "TJmI4L76eLrfq5WW",
   "name": "ai-agent-2-v2-gpt",
   "active": false,
   "isArchived": false,
@@ -16,14 +16,14 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        -2220,
-        760
+        -1360,
+        180
       ],
-      "id": "4b07249a-cd1b-40e1-b749-e406b3a7e51f",
+      "id": "4cda3e48-a87a-4752-a9f4-dd04ce691a3d",
       "credentials": {
         "postgres": {
-          "id": "khc9nZXORM0xAEhP",
-          "name": "amazon_product"
+          "id": "ufLqaq0vJt3QUgxO",
+          "name": "Postgres account 2"
         }
       }
     },
@@ -35,10 +35,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1120,
-        585
+        -260,
+        0
       ],
-      "id": "414376fd-43e6-4920-9441-013479d7d069"
+      "id": "5f577e6e-510f-416b-a392-d33fc5b9ae0b"
     },
     {
       "parameters": {
@@ -77,10 +77,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -900,
-        585
+        -40,
+        0
       ],
-      "id": "7cb112be-90c4-46d7-9aa3-0e7c029e76ef"
+      "id": "25300392-0a21-48d0-900f-9a0c934ea1da"
     },
     {
       "parameters": {
@@ -92,10 +92,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        -460,
-        685
+        400,
+        100
       ],
-      "id": "08e89e67-0b2c-4646-b7c2-483cb2938c4b",
+      "id": "db9f5e26-fce3-42bb-8ed5-9a9b24aed885",
       "name": "Append Batch"
     },
     {
@@ -107,10 +107,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -2440,
-        760
+        -1580,
+        180
       ],
-      "id": "d7222a6a-72f4-4fad-9688-ac7dc2d50677",
+      "id": "a5162ed4-3c49-4ba7-99a9-ecdb18385a64",
       "name": "Webhook",
       "webhookId": "0909f34c-da13-493d-984e-901eb3972a1e"
     },
@@ -121,10 +121,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2000,
-        760
+        -1140,
+        180
       ],
-      "id": "3de23170-e260-4f99-8033-c4eaca80c0be",
+      "id": "3e256d67-df6d-4786-9311-7426dcbeb9a9",
       "name": "Initialize Pagination"
     },
     {
@@ -137,16 +137,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        -1780,
-        660
+        -920,
+        80
       ],
-      "id": "f96faea4-f7c5-4f36-b7f9-5e2a670eda1e",
-      "credentials": {
-        "postgres": {
-          "id": "khc9nZXORM0xAEhP",
-          "name": "amazon_product"
-        }
-      }
+      "id": "eeef1fd6-0bd9-4ac9-8c3c-4988986a770b"
     },
     {
       "parameters": {
@@ -158,16 +152,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2,
       "position": [
-        -1780,
-        985
+        -920,
+        400
       ],
-      "id": "79d0b797-3846-4deb-84af-be9810d92d8e",
-      "credentials": {
-        "postgres": {
-          "id": "khc9nZXORM0xAEhP",
-          "name": "amazon_product"
-        }
-      }
+      "id": "82da18bf-3e8d-4aca-a169-c1b5ad7a8143"
     },
     {
       "parameters": {
@@ -186,10 +174,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
       "position": [
-        -1560,
-        585
+        -700,
+        0
       ],
-      "id": "f2cb06f3-ccaa-4f1c-85c6-21855fcc3b4a"
+      "id": "67b80e2d-d3ba-476b-bb9a-cb858998c4fd"
     },
     {
       "parameters": {
@@ -199,10 +187,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1340,
-        585
+        -480,
+        0
       ],
-      "id": "5d6c245e-b8d9-4db2-89c0-d95e2c84d361"
+      "id": "9aede35a-5a74-4ac8-a13a-e8f6dd135e70"
     },
     {
       "parameters": {
@@ -232,10 +220,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -20,
-        585
+        840,
+        0
       ],
-      "id": "e13c899b-3a80-4e7f-9240-e3d3703da435"
+      "id": "ea9ae9e9-68b6-4543-845f-c3588d9a3a2b"
     },
     {
       "parameters": {
@@ -245,10 +233,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        200,
-        785
+        1060,
+        200
       ],
-      "id": "4d47b62f-9800-45b0-822a-aaf022dae7c6"
+      "id": "8ed88bdb-3cfa-42df-b1f3-1d53fb48674b"
     },
     {
       "parameters": {
@@ -258,10 +246,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        200,
-        535
+        1060,
+        -60
       ],
-      "id": "541f50de-981b-449d-9d27-686b0afa4a34"
+      "id": "dd8584da-4c1f-4158-b2fd-3b23b7a7e68d"
     },
     {
       "parameters": {
@@ -278,10 +266,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        640,
-        535
+        1500,
+        -60
       ],
-      "id": "758d77e4-de37-4c08-b219-a4aa13e7a339",
+      "id": "b5a6dea4-139f-4a1f-843c-6f9c8c9426b6",
       "name": "HTTP Request1"
     },
     {
@@ -293,10 +281,10 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        -680,
-        685
+        180,
+        100
       ],
-      "id": "50ff37d5-1707-4fa4-b3d9-72d69e728535",
+      "id": "f684d287-a04a-4c5c-a837-a679287ea7ec",
       "name": "Convert to File1"
     },
     {
@@ -308,10 +296,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        -460,
-        485
+        400,
+        -100
       ],
-      "id": "446b8e53-3574-4464-814f-84689fb00778",
+      "id": "62877c1c-885b-4a84-918d-56422b978887",
       "name": "Read/Write Files from Disk"
     },
     {
@@ -322,10 +310,10 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        -680,
-        485
+        180,
+        -100
       ],
-      "id": "ce87cc9a-9ad3-4b6e-92d9-6f558fd4d285",
+      "id": "81ee3dc0-afbf-4b62-9b56-b7a5c83b06ed",
       "name": "Convert to File"
     },
     {
@@ -336,10 +324,10 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        -240,
-        585
+        620,
+        0
       ],
-      "id": "200e0cb6-550e-405f-88bd-ce8482c061a1",
+      "id": "b55de1c7-0c72-4778-90ef-d7ea8ef07900",
       "name": "Aggregate"
     },
     {
@@ -349,10 +337,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        420,
-        535
+        1280,
+        -60
       ],
-      "id": "830881ee-6b20-4bc4-b0b7-b5868938d2c2",
+      "id": "842ece53-94c8-48e1-907c-fe0337e9f35f",
       "name": "Close JSON File",
       "disabled": true
     }
@@ -580,11 +568,9 @@
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "meta": null,
   "pinData": {},
-  "versionId": "259fd97a-b148-4bd2-9193-64964c5c959f",
-  "triggerCount": 2,
+  "versionId": "ff49dd25-fedb-4f26-b347-8f1a9d5f3867",
+  "triggerCount": 0,
   "tags": []
 }
