@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-04-14T15:34:46.120Z",
-  "updatedAt": "2025-05-24T10:28:56.294Z",
+  "updatedAt": "2025-06-22T10:46:48.699Z",
   "id": "sjmgzU6mN4JBJB8z",
   "name": "Telegram bot chatbot",
   "active": false,
@@ -48,14 +48,33 @@
     },
     {
       "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        180,
+        220
+      ],
+      "id": "842bc30e-4499-42b5-ae72-1fd1feb8da4c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ph2XhABiK1VUeOmK",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "sessionIdType": "customKey",
         "sessionKey": "={{ $json.message.from.username }}"
       },
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        280,
-        240
+        320,
+        220
       ],
       "id": "d85de2a2-2bc1-4341-8e76-3c4332c473f2",
       "name": "Postgres Chat Memory",
@@ -89,74 +108,6 @@
           "name": "Telegram account"
         }
       }
-    },
-    {
-      "parameters": {
-        "projectId": {
-          "__rl": true,
-          "value": "buat-maen2-aja",
-          "mode": "list",
-          "cachedResultName": "buat maen2 aja"
-        },
-        "modelName": "gemini-2.0-flash",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
-      "typeVersion": 1,
-      "position": [
-        120,
-        200
-      ],
-      "id": "c97ef87d-42d3-41e1-95a4-f00033bd873a",
-      "name": "Google Vertex Chat Model",
-      "credentials": {
-        "googleApi": {
-          "id": "frIS2sQR5bxxzXkA",
-          "name": "Google Service Account account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "authentication": "serviceAccount",
-        "documentId": {
-          "__rl": true,
-          "value": "1SEWF5yy4L08BqijWTQ4yaFDhi9pclVQrHISWAY8BD8E",
-          "mode": "list",
-          "cachedResultName": "amazon_dataset_cleaned",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SEWF5yy4L08BqijWTQ4yaFDhi9pclVQrHISWAY8BD8E/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": 236622789,
-          "mode": "list",
-          "cachedResultName": "Amazon_dataset_cleaned",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SEWF5yy4L08BqijWTQ4yaFDhi9pclVQrHISWAY8BD8E/edit#gid=236622789"
-        },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "name",
-              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheetsTool",
-      "typeVersion": 4.6,
-      "position": [
-        480,
-        220
-      ],
-      "id": "a4e14701-76d4-4580-a912-7f258e71f7ab",
-      "name": "Google Sheets",
-      "credentials": {
-        "googleApi": {
-          "id": "frIS2sQR5bxxzXkA",
-          "name": "Google Service Account account"
-        }
-      }
     }
   ],
   "connections": {
@@ -166,6 +117,17 @@
           {
             "node": "AI Agent",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -192,28 +154,6 @@
           }
         ]
       ]
-    },
-    "Google Vertex Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Sheets": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
@@ -224,7 +164,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "d067f220-def4-490e-a229-99a1da9ba7cc",
+  "versionId": "15c5f1d6-8ba8-4e72-a077-782d1c395cfb",
   "triggerCount": 1,
   "tags": []
 }
