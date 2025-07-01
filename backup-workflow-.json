@@ -1,7 +1,7 @@
 {
-  "createdAt": "2025-06-28T07:13:16.396Z",
-  "updatedAt": "2025-06-28T07:26:10.491Z",
-  "id": "JlxCDBUxJ9kPc6vV",
+  "createdAt": "2025-07-01T09:05:01.220Z",
+  "updatedAt": "2025-07-01T09:06:56.703Z",
+  "id": "PMuCEIRwopG3SPJa",
   "name": "backup-workflow",
   "active": true,
   "isArchived": false,
@@ -11,17 +11,17 @@
         "filters": {},
         "requestOptions": {}
       },
-      "id": "8998c8d5-3d8f-4de1-8361-a96154bf8a9f",
+      "id": "06ca2c55-c13c-4b79-a422-d39af0527154",
       "name": "Retrieve workflows",
       "type": "n8n-nodes-base.n8n",
       "position": [
-        340,
-        140
+        160,
+        80
       ],
       "typeVersion": 1,
       "credentials": {
         "n8nApi": {
-          "id": "Y4Egc6t2gKTQ1tJI",
+          "id": "wsWe5RDMwvlhWkF6",
           "name": "n8n account"
         }
       }
@@ -37,12 +37,12 @@
         },
         "options": {}
       },
-      "id": "21ec293a-3a55-420b-abcc-3895dda1ce87",
+      "id": "2856f091-2570-4182-a130-f1257f9aa2d8",
       "name": "Aggregate",
       "type": "n8n-nodes-base.aggregate",
       "position": [
-        180,
-        140
+        0,
+        80
       ],
       "typeVersion": 1
     },
@@ -63,19 +63,19 @@
           "cachedResultUrl": "https://github.com/Cleign1/n8n-workflow"
         }
       },
-      "id": "f1b15925-44e0-49bb-b621-30f960ff4d8a",
+      "id": "b428908c-8306-4c83-a04b-c8426536fb21",
       "name": "List files from repo",
       "type": "n8n-nodes-base.github",
       "position": [
-        20,
-        140
+        -160,
+        80
       ],
       "webhookId": "354d699e-44b0-4444-9d31-af7fd4ff5561",
       "typeVersion": 1,
       "alwaysOutputData": true,
       "credentials": {
         "githubApi": {
-          "id": "lj6h7wQ1DuqYB7Nk",
+          "id": "NRcp3O2RfD4sUMIc",
           "name": "GitHub account"
         }
       }
@@ -100,18 +100,18 @@
         "fileContent": "={{ $('To base64').item.json.data }}",
         "commitMessage": "=backup-{{ $('Commit date & file name').item.json.commitDate }}"
       },
-      "id": "a1cf707e-d4b9-4ef4-9f3b-f0e1dc7d1144",
+      "id": "95516ae8-698a-45cd-a9b2-e6e27a1042c3",
       "name": "Update file",
       "type": "n8n-nodes-base.github",
       "position": [
-        1140,
-        60
+        960,
+        0
       ],
       "webhookId": "27218087-8df7-474d-a39f-70cfa9c34ec8",
       "typeVersion": 1,
       "credentials": {
         "githubApi": {
-          "id": "lj6h7wQ1DuqYB7Nk",
+          "id": "NRcp3O2RfD4sUMIc",
           "name": "GitHub account"
         }
       }
@@ -135,18 +135,18 @@
         "fileContent": "={{ $('To base64').item.json.data }}",
         "commitMessage": "=backup-{{ $node['Commit date & file name'].json.commitDate }}"
       },
-      "id": "42582fc9-0b96-46a3-8e6f-421f550b10be",
+      "id": "d6731eb9-d46f-403c-b3a0-cf5b98325f7d",
       "name": "Upload file",
       "type": "n8n-nodes-base.github",
       "position": [
-        1140,
-        220
+        960,
+        160
       ],
       "webhookId": "ce4b561b-acb9-4cd8-b76f-4928dada9674",
       "typeVersion": 1,
       "credentials": {
         "githubApi": {
-          "id": "lj6h7wQ1DuqYB7Nk",
+          "id": "NRcp3O2RfD4sUMIc",
           "name": "GitHub account"
         }
       }
@@ -163,12 +163,12 @@
           ]
         }
       },
-      "id": "a8376f7e-8926-4126-b4b2-8fa5608fa607",
+      "id": "c9ffa6a7-9a59-4985-a513-d639a9f791e6",
       "name": "Check if file exists",
       "type": "n8n-nodes-base.if",
       "position": [
-        980,
-        140
+        800,
+        80
       ],
       "typeVersion": 1
     },
@@ -180,12 +180,12 @@
           "format": true
         }
       },
-      "id": "8cae1774-a9b5-4f81-bc12-682b3cc6f6c5",
+      "id": "8546ce25-58ec-41aa-b911-041d02083e07",
       "name": "Json file",
       "type": "n8n-nodes-base.convertToFile",
       "position": [
-        500,
-        140
+        320,
+        80
       ],
       "typeVersion": 1.1
     },
@@ -194,12 +194,12 @@
         "operation": "binaryToPropery",
         "options": {}
       },
-      "id": "b42f35d1-f398-462c-833e-4c497d667222",
+      "id": "3ef3761d-fb2b-4fb7-b480-c2310ca7fa5d",
       "name": "To base64",
       "type": "n8n-nodes-base.extractFromFile",
       "position": [
-        660,
-        140
+        480,
+        80
       ],
       "typeVersion": 1
     },
@@ -210,12 +210,12 @@
         "width": 300,
         "color": 5
       },
-      "id": "6477dded-08a4-467d-b92b-08da89e3625b",
+      "id": "3d7a1d4e-d2ad-4fc6-ad8e-60f8729bf15f",
       "name": "Sticky Note1",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        0,
-        0
+        -180,
+        -60
       ],
       "typeVersion": 1
     },
@@ -239,12 +239,12 @@
         },
         "options": {}
       },
-      "id": "643bceaa-9c92-4ae9-8029-3b5a8b95e9cb",
+      "id": "b0ffad8c-95a3-471e-a696-4b3db0487053",
       "name": "Commit date & file name",
       "type": "n8n-nodes-base.set",
       "position": [
-        820,
-        140
+        640,
+        80
       ],
       "typeVersion": 3.4
     },
@@ -255,12 +255,12 @@
         "width": 460,
         "color": 3
       },
-      "id": "23511f91-eac5-4a06-bf53-060cb7b5f83d",
+      "id": "e24b016d-7354-4a34-82ea-d16eeb440e79",
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        340,
-        0
+        160,
+        -60
       ],
       "typeVersion": 1
     },
@@ -271,12 +271,12 @@
         "width": 460,
         "color": 4
       },
-      "id": "a1a0e091-070c-4c9a-9168-58bc7eda98e8",
+      "id": "7d26ff28-be0e-4c81-95b2-865012a55563",
       "name": "Sticky Note3",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        800,
-        0
+        620,
+        -60
       ],
       "typeVersion": 1
     },
@@ -290,16 +290,16 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -220,
-        140
+        -400,
+        80
       ],
-      "id": "f11c4340-18e2-4074-ad0b-9274a7accd81",
+      "id": "e88219c9-36be-4f7c-ab7d-1c482326be27",
       "name": "Webhook",
       "webhookId": "51721210-ac0e-4a28-83d4-459c386ff7a9",
       "credentials": {
         "httpBasicAuth": {
-          "id": "jmK1l5fQNA45qaU2",
-          "name": "simple"
+          "id": "VW1skvlf9RhTKiuQ",
+          "name": "Unnamed credential"
         }
       }
     },
@@ -311,10 +311,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.2,
       "position": [
-        1400,
-        140
+        1220,
+        80
       ],
-      "id": "424e25d6-19bb-4e79-a6b3-263ab8c1c934",
+      "id": "781d5d42-88aa-485b-851c-2111291a8b49",
       "name": "Respond to Webhook"
     }
   ],
@@ -445,7 +445,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "dc380ef5-2f6a-4131-bc50-fd80b6b0138a",
+  "versionId": "a27091e1-fd30-42e2-b8a6-f228c8dff215",
   "triggerCount": 1,
   "tags": []
 }
