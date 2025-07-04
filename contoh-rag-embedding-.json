@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-01T11:45:05.466Z",
-  "updatedAt": "2025-07-01T13:02:00.351Z",
+  "updatedAt": "2025-07-03T09:34:00.816Z",
   "id": "5OuiZIQzm4A7nXRL",
   "name": "contoh-rag-embedding",
   "active": false,
@@ -1076,7 +1076,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "91c5d4cc-3bd1-43f1-82c2-2938f837eafe",
+  "versionId": "93483bb0-243c-43fc-b333-4827d9db14d8",
   "triggerCount": 0,
   "tags": []
 }
