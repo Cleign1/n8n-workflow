@@ -1,24 +1,11 @@
 {
   "createdAt": "2025-07-01T08:58:58.065Z",
-  "updatedAt": "2025-07-01T11:23:02.687Z",
+  "updatedAt": "2025-07-03T09:39:11.202Z",
   "id": "OpPhzm9k32dxiE2B",
   "name": "contoh-rag",
   "active": false,
   "isArchived": false,
   "nodes": [
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "fb4de6a9-4c5c-41a0-9ed5-edaa61609d55",
-      "name": "OpenAI Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1,
-      "position": [
-        -1200,
-        260
-      ]
-    },
     {
       "parameters": {
         "jsonMode": "expressionData",
@@ -59,22 +46,6 @@
       "position": [
         300,
         1040
-      ]
-    },
-    {
-      "parameters": {
-        "content": "## Agent Tools for RAG",
-        "height": 528.85546469693,
-        "width": 583.4552380860637,
-        "color": 4
-      },
-      "id": "1aa74cc4-3dc1-41c6-b53e-3912145a922a",
-      "name": "Sticky Note",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -460,
-        -100
       ]
     },
     {
@@ -193,18 +164,6 @@
       "alwaysOutputData": true
     },
     {
-      "parameters": {},
-      "id": "b60a9775-4c01-41e0-874a-8442b623f3b0",
-      "name": "Postgres Chat Memory",
-      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-      "typeVersion": 1,
-      "position": [
-        -1060,
-        260
-      ],
-      "notesInFlow": false
-    },
-    {
       "parameters": {
         "operation": "delete",
         "tableId": "documents",
@@ -279,81 +238,6 @@
     },
     {
       "parameters": {
-        "options": {}
-      },
-      "id": "13ac5cf8-22b6-4c65-8198-72f12b3feedb",
-      "name": "Respond to Webhook",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        -640,
-        40
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "9a9a245e-f1a1-4282-bb02-a81ffe629f0f",
-              "name": "chatInput",
-              "value": "={{ $json?.chatInput || $json.body.chatInput }}",
-              "type": "string"
-            },
-            {
-              "id": "b80831d8-c653-4203-8706-adedfdb98f77",
-              "name": "sessionId",
-              "value": "={{ $json?.sessionId || $json.body.sessionId}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "8e69005e-5ce1-4edd-ac60-86feee6a1a65",
-      "name": "Edit Fields",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -1200,
-        40
-      ]
-    },
-    {
-      "parameters": {
-        "public": true,
-        "options": {}
-      },
-      "id": "39681c8b-67cb-4003-9111-730d7ebcc7b3",
-      "name": "When chat message received",
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.1,
-      "position": [
-        -1460,
-        40
-      ],
-      "webhookId": "e104e40e-6134-4825-a6f0-8a646d882662"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "bf4dd093-bb02-472c-9454-7ab9af97bd1d",
-        "authentication": "headerAuth",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "772e8c8e-2f2c-4334-985f-a1b09c37f405",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -1460,
-        240
-      ],
-      "webhookId": "bf4dd093-bb02-472c-9454-7ab9af97bd1d"
-    },
-    {
-      "parameters": {
         "operation": "pdf",
         "options": {}
       },
@@ -410,23 +294,6 @@
       "position": [
         -20,
         740
-      ]
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.chatInput }}",
-        "options": {
-          "systemMessage": "You are a personal assistant who helps answer questions from a corpus of documents. The documents are either text based (Txt, docs, extracted PDFs, etc.) or tabular data (CSVs or Excel documents).\n\nYou are given tools to perform RAG in the 'documents' table, look up the documents available in your knowledge base in the 'document_metadata' table, extract all the text from a given document, and query the tabular files with SQL in the 'document_rows' table.\n\nAlways start by performing RAG unless the question requires a SQL query for tabular data (fetching a sum, finding a max, something a RAG lookup would be unreliable for). If RAG doesn't help, then look at the documents that are available to you, find a few that you think would contain the answer, and then analyze those.\n\nAlways tell the user if you didn't find the answer. Don't make something up just to please them."
-        }
-      },
-      "id": "48939f9d-a816-4674-ada9-2a45445d2af5",
-      "name": "RAG AI Agent",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.6,
-      "position": [
-        -980,
-        40
       ]
     },
     {
@@ -673,107 +540,6 @@
       ],
       "id": "48eb1daf-f0f1-498f-be96-cd36dff33203",
       "name": "Create Document Rows Table (for Tabular Data)"
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Use this tool to fetch all available documents, including the table schema if the file is a CSV or Excel file.",
-        "operation": "select",
-        "schema": {
-          "__rl": true,
-          "mode": "list",
-          "value": "public"
-        },
-        "table": {
-          "__rl": true,
-          "value": "document_metadata",
-          "mode": "list",
-          "cachedResultName": "document_metadata"
-        },
-        "returnAll": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgresTool",
-      "typeVersion": 2.5,
-      "position": [
-        -920,
-        260
-      ],
-      "id": "eeaeec4b-a6a8-49c9-b317-1af5f4057cfe",
-      "name": "List Documents"
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Given a file ID, fetches the text from the document.",
-        "operation": "executeQuery",
-        "query": "SELECT \n    string_agg(content, ' ') as document_text\nFROM documents\n  WHERE metadata->>'file_id' = $1\nGROUP BY metadata->>'file_id';",
-        "options": {
-          "queryReplacement": "={{ $fromAI('file_id') }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgresTool",
-      "typeVersion": 2.5,
-      "position": [
-        -780,
-        260
-      ],
-      "id": "5d6a677d-1f01-416a-8306-fde8a6d44934",
-      "name": "Get File Contents"
-    },
-    {
-      "parameters": {
-        "descriptionType": "manual",
-        "toolDescription": "Run a SQL query - use this to query from the document_rows table once you know the file ID you are querying. dataset_id is the file_id and you are always using the row_data for filtering, which is a jsonb field that has all the keys from the file schema given in the document_metadata table.\n\nExample query:\n\nSELECT AVG((row_data->>'revenue')::numeric)\nFROM document_rows\nWHERE dataset_id = '123';\n\nExample query 2:\n\nSELECT \n    row_data->>'category' as category,\n    SUM((row_data->>'sales')::numeric) as total_sales\nFROM dataset_rows\nWHERE dataset_id = '123'\nGROUP BY row_data->>'category';",
-        "operation": "executeQuery",
-        "query": "{{ $fromAI('sql_query') }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgresTool",
-      "typeVersion": 2.5,
-      "position": [
-        -620,
-        260
-      ],
-      "id": "50322ff7-c172-456e-8568-9f3d4d998ccc",
-      "name": "Query Document Rows"
-    },
-    {
-      "parameters": {
-        "mode": "retrieve-as-tool",
-        "toolName": "documents",
-        "toolDescription": "Use RAG to look up information in the knowledgebase.",
-        "tableName": {
-          "__rl": true,
-          "value": "documents",
-          "mode": "list",
-          "cachedResultName": "documents"
-        },
-        "options": {
-          "queryName": "match_documents"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
-      "typeVersion": 1,
-      "position": [
-        -300,
-        40
-      ],
-      "id": "588e2d4c-11b7-4660-b08e-2abf42a0ca76",
-      "name": "Supabase Vector Store1"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        -200,
-        220
-      ],
-      "id": "3be06a44-848a-48ac-86bb-251ea4628e42",
-      "name": "Embeddings OpenAI2"
     },
     {
       "parameters": {
@@ -1094,20 +860,243 @@
       "typeVersion": 1,
       "id": "c6b8c61d-607d-4b42-bbd3-b50ea9de787f",
       "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        220
+      ],
+      "id": "3be06a44-848a-48ac-86bb-251ea4628e42",
+      "name": "Embeddings OpenAI2"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "documents",
+        "toolDescription": "Use RAG to look up information in the knowledgebase.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        40
+      ],
+      "id": "588e2d4c-11b7-4660-b08e-2abf42a0ca76",
+      "name": "Supabase Vector Store1"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Run a SQL query - use this to query from the document_rows table once you know the file ID you are querying. dataset_id is the file_id and you are always using the row_data for filtering, which is a jsonb field that has all the keys from the file schema given in the document_metadata table.\n\nExample query:\n\nSELECT AVG((row_data->>'revenue')::numeric)\nFROM document_rows\nWHERE dataset_id = '123';\n\nExample query 2:\n\nSELECT \n    row_data->>'category' as category,\n    SUM((row_data->>'sales')::numeric) as total_sales\nFROM dataset_rows\nWHERE dataset_id = '123'\nGROUP BY row_data->>'category';",
+        "operation": "executeQuery",
+        "query": "{{ $fromAI('sql_query') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.5,
+      "position": [
+        -620,
+        260
+      ],
+      "id": "50322ff7-c172-456e-8568-9f3d4d998ccc",
+      "name": "Query Document Rows"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Given a file ID, fetches the text from the document.",
+        "operation": "executeQuery",
+        "query": "SELECT \n    string_agg(content, ' ') as document_text\nFROM documents\n  WHERE metadata->>'file_id' = $1\nGROUP BY metadata->>'file_id';",
+        "options": {
+          "queryReplacement": "={{ $fromAI('file_id') }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.5,
+      "position": [
+        -780,
+        260
+      ],
+      "id": "5d6a677d-1f01-416a-8306-fde8a6d44934",
+      "name": "Get File Contents"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to fetch all available documents, including the table schema if the file is a CSV or Excel file.",
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "document_metadata",
+          "mode": "list",
+          "cachedResultName": "document_metadata"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.5,
+      "position": [
+        -920,
+        260
+      ],
+      "id": "eeaeec4b-a6a8-49c9-b317-1af5f4057cfe",
+      "name": "List Documents"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are a personal assistant who helps answer questions from a corpus of documents. The documents are either text based (Txt, docs, extracted PDFs, etc.) or tabular data (CSVs or Excel documents).\n\nYou are given tools to perform RAG in the 'documents' table, look up the documents available in your knowledge base in the 'document_metadata' table, extract all the text from a given document, and query the tabular files with SQL in the 'document_rows' table.\n\nAlways start by performing RAG unless the question requires a SQL query for tabular data (fetching a sum, finding a max, something a RAG lookup would be unreliable for). If RAG doesn't help, then look at the documents that are available to you, find a few that you think would contain the answer, and then analyze those.\n\nAlways tell the user if you didn't find the answer. Don't make something up just to please them."
+        }
+      },
+      "id": "48939f9d-a816-4674-ada9-2a45445d2af5",
+      "name": "RAG AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -980,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bf4dd093-bb02-472c-9454-7ab9af97bd1d",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "772e8c8e-2f2c-4334-985f-a1b09c37f405",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1460,
+        240
+      ],
+      "webhookId": "bf4dd093-bb02-472c-9454-7ab9af97bd1d"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "id": "39681c8b-67cb-4003-9111-730d7ebcc7b3",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1460,
+        40
+      ],
+      "webhookId": "e104e40e-6134-4825-a6f0-8a646d882662"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a9a245e-f1a1-4282-bb02-a81ffe629f0f",
+              "name": "chatInput",
+              "value": "={{ $json?.chatInput || $json.body.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "b80831d8-c653-4203-8706-adedfdb98f77",
+              "name": "sessionId",
+              "value": "={{ $json?.sessionId || $json.body.sessionId}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8e69005e-5ce1-4edd-ac60-86feee6a1a65",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1200,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "13ac5cf8-22b6-4c65-8198-72f12b3feedb",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -640,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "b60a9775-4c01-41e0-874a-8442b623f3b0",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1,
+      "position": [
+        -1060,
+        260
+      ],
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "content": "## Agent Tools for RAG",
+        "height": 528.85546469693,
+        "width": 583.4552380860637,
+        "color": 4
+      },
+      "id": "1aa74cc4-3dc1-41c6-b53e-3912145a922a",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "fb4de6a9-4c5c-41a0-9ed5-edaa61609d55",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        260
+      ]
     }
   ],
   "connections": {
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "RAG AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Download File": {
       "main": [
         [
@@ -1163,17 +1152,6 @@
         ]
       ]
     },
-    "Postgres Chat Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "RAG AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Delete Old Doc Rows": {
       "main": [
         [
@@ -1201,39 +1179,6 @@
         [
           {
             "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "RAG AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When chat message received": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
@@ -1283,17 +1228,6 @@
           },
           {
             "node": "Insert into Supabase Vectorstore",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "RAG AI Agent": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
@@ -1386,61 +1320,6 @@
         ]
       ]
     },
-    "List Documents": {
-      "ai_tool": [
-        [
-          {
-            "node": "RAG AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get File Contents": {
-      "ai_tool": [
-        [
-          {
-            "node": "RAG AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Query Document Rows": {
-      "ai_tool": [
-        [
-          {
-            "node": "RAG AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Supabase Vector Store1": {
-      "ai_tool": [
-        [
-          {
-            "node": "RAG AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI2": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Supabase Vector Store1",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Loop Over Items": {
       "main": [
         [],
@@ -1492,6 +1371,127 @@
           {
             "node": "Download File",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Document Rows": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Contents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -1745,7 +1745,7 @@
       }
     ]
   },
-  "versionId": "60c87479-11f8-46e4-855a-3db320254597",
+  "versionId": "0a7e0625-d54b-43f2-8d5d-e1517ffc9e54",
   "triggerCount": 0,
   "tags": []
 }
