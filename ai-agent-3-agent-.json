@@ -1,6 +1,6 @@
 {
   "createdAt": "2025-07-01T13:12:38.047Z",
-  "updatedAt": "2025-07-04T16:51:07.017Z",
+  "updatedAt": "2025-07-07T15:25:54.072Z",
   "id": "wEG9Hn2KjrntbZVF",
   "name": "ai-agent-3-agent",
   "active": true,
@@ -51,7 +51,7 @@
       "typeVersion": 1,
       "position": [
         1000,
-        120
+        220
       ]
     },
     {
@@ -68,7 +68,7 @@
       "typeVersion": 3,
       "position": [
         340,
-        120
+        220
       ],
       "id": "83cb1c2f-fc4b-4733-a118-244c34a488cf",
       "name": "Download file",
@@ -87,7 +87,7 @@
       "typeVersion": 1,
       "position": [
         560,
-        120
+        220
       ],
       "id": "c0dba9ad-cc26-46a4-be59-cef4ebf04fca",
       "name": "Extract from File"
@@ -137,7 +137,7 @@
       "typeVersion": 3,
       "position": [
         -100,
-        120
+        220
       ],
       "id": "efcd42e5-a11f-4017-950a-4f85587204b9",
       "name": "Search files and folders",
@@ -156,7 +156,7 @@
       "typeVersion": 2,
       "position": [
         120,
-        120
+        220
       ],
       "id": "c985b4da-3cda-471d-8496-e892de0370f4",
       "name": "Code1"
@@ -169,10 +169,23 @@
       "typeVersion": 2,
       "position": [
         780,
-        120
+        220
       ],
       "id": "659e2502-0a23-4d84-9dc4-011217de28ed",
       "name": "Summarize Stats"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -320,
+        320
+      ],
+      "id": "a8f8173c-eb6b-4331-85a7-366ca305426f",
+      "name": "When Executed by Another Workflow"
     }
   ],
   "connections": {
@@ -241,6 +254,17 @@
           }
         ]
       ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -251,7 +275,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "3a56a23b-a22d-4981-8ddb-b147ba657af5",
+  "versionId": "f549f995-909d-468c-9d53-fc35ea67e66c",
   "triggerCount": 1,
   "tags": []
 }
