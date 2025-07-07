@@ -1,0 +1,302 @@
+{
+  "createdAt": "2025-07-07T07:31:42.982Z",
+  "updatedAt": "2025-07-07T08:47:53.737Z",
+  "id": "caZJCm84rd6BBMGi",
+  "name": "Stock Prediction Workflow - New",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "node_1",
+      "name": "Start Prediction",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        0,
+        375
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "node_2",
+      "name": "Initialize Loop",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        220,
+        375
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \"index\", \"name\", \"stock\" FROM public.amazon_dataset ORDER BY \"index\" LIMIT 500 OFFSET {{ $json.offset }};",
+        "additionalFields": {}
+      },
+      "id": "node_3",
+      "name": "Fetch Product Batch",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        440,
+        375
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "tRq3Te30DMU6ALHv",
+          "name": "amazon-product"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $items().length > 0 }}"
+            }
+          ]
+        }
+      },
+      "id": "node_4",
+      "name": "Products Found?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        660,
+        300
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const products = $input.all().map(item => item.json);\nconst productIds = products.map(p => p.index);\n\nif (productIds.length === 0) {\n  return [];\n}\n\nconst query = `\n  SELECT \"index\", \"quantity_sold\"\n  FROM public.daily_sales\n  WHERE \"index\" = ANY('{${productIds.join(',')}}')\n    AND \"date\" >= (CAST('{{ $workflow.input.prediction_date }}' AS DATE) - interval '3 days')\n    AND \"date\" < CAST('{{ $workflow.input.prediction_date }}' AS DATE);\n`;\n\nreturn [{ json: { query: query, products: products } }];"
+      },
+      "id": "node_5",
+      "name": "Fetch Sales Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        880,
+        300
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.query }}",
+        "additionalFields": {}
+      },
+      "id": "node_6",
+      "name": "Execute Sales Query",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        1100,
+        300
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "tRq3Te30DMU6ALHv",
+          "name": "amazon-product"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const salesData = $input.all().map(item => item.json);\nconst products = $node[\"Fetch Sales Data\"].context.json.products;\n\nconst salesByProduct = {};\nfor (const sale of salesData) {\n  if (!salesByProduct[sale.index]) {\n    salesByProduct[sale.index] = [];\n  }\n  salesByProduct[sale.index].push(sale.quantity_sold);\n}\n\nconst insufficientStockProducts = [];\nfor (const product of products) {\n  const sales = salesByProduct[product.index] || [];\n  const totalSales = sales.reduce((a, b) => a + b, 0);\n  const avgSales = totalSales / 3.0;\n  const predictedDemand = Math.ceil(avgSales * 3);\n  const isSufficient = product.stock > predictedDemand;\n\n  if (!isSufficient) {\n    insufficientStockProducts.push({\n      product_id: product.index,\n      product_name: product.name,\n      current_stock: product.stock,\n      average_daily_sales_last_3_days: avgSales,\n      predicted_demand_next_3_days: predictedDemand,\n      is_stock_sufficient: isSufficient,\n    });\n  }\n}\n\nreturn insufficientStockProducts.map(p => ({ json: p }));"
+      },
+      "id": "node_7",
+      "name": "Calculate Predictions",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1320,
+        300
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "node_8",
+      "name": "Increment Offset",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1540,
+        300
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "node_9",
+      "name": "End Loop",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        880,
+        500
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "node_10",
+      "name": "Create CSV",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "position": [
+        1100,
+        500
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CALLBACK_URL }}",
+        "options": {}
+      },
+      "id": "node_12",
+      "name": "Send Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1540,
+        500
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Start Prediction": {
+      "main": [
+        [
+          {
+            "node": "Initialize Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Loop": {
+      "main": [
+        [
+          {
+            "node": "Fetch Product Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Product Batch": {
+      "main": [
+        [
+          {
+            "node": "Products Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Products Found?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Sales Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "End Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Sales Data": {
+      "main": [
+        [
+          {
+            "node": "Execute Sales Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Sales Query": {
+      "main": [
+        [
+          {
+            "node": "Calculate Predictions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Predictions": {
+      "main": [
+        [
+          {
+            "node": "Increment Offset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increment Offset": {
+      "main": [
+        [
+          {
+            "node": "Fetch Product Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End Loop": {
+      "main": [
+        [
+          {
+            "node": "Create CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create CSV": {
+      "main": [
+        [
+          {
+            "node": "Send Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d7209d53-ae30-4e5b-ad7b-fad30ff80d4e",
+  "triggerCount": 0,
+  "tags": []
+}
