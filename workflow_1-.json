@@ -1,0 +1,241 @@
+{
+  "createdAt": "2025-07-06T16:25:44.285Z",
+  "updatedAt": "2025-07-07T05:20:36.294Z",
+  "id": "kzIkLF7hljeez219",
+  "name": "workflow_1",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Asumsi input dari webhook adalah: { \"tanggal\": \"2025-04-04\" }\nconst tanggal = $input.first().json.date; // Mengambil data tanggal dari node sebelumnya\n\n// Membuat nama file yang akan dicari di Google Drive\nconst namaFile = `daily_sales_${tanggal}.csv`; \n\n// Mengembalikan nama file untuk digunakan di node selanjutnya\nreturn { namaFile };"
+      },
+      "id": "399c50aa-6d33-44a6-855e-d78e1e8fb9de",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -80,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const salesData = $input.all().map(item => item.json);\n\n// 1. Validate the incoming data\nif (!Array.isArray(salesData) || salesData.length === 0) {\n  // If there's no valid data, stop the workflow by returning an empty array.\n  return [];\n}\n\n// 2. Transform the sales data into a SQL VALUES list.\nconst valuesList = salesData\n  .map(sale => {\n    const productIndex = parseInt(sale.index, 10);\n    const quantitySold = parseInt(sale.quantity_sold, 10);\n\n    // Basic validation for each item\n    if (isNaN(productIndex) || isNaN(quantitySold)) {\n      return null;\n    }\n    return `(${productIndex}, ${quantitySold})`;\n  })\n  .filter(Boolean) // Remove any null entries from invalid sales items\n  .join(', ');\n\n// If after filtering there are no valid values, stop.\nif (!valuesList) {\n  return [];\n}\n\n\n// 3. Construct the final, powerful UPDATE query.\nconst updateQuery = `\nUPDATE public.amazon_dataset AS ad\nSET\n    stock = ad.stock - v.quantity_sold\nFROM (\n    VALUES ${valuesList}\n) AS v(product_index, quantity_sold)\nWHERE ad.index = v.product_index;\n`;\n\n// 4. Output the generated query for the next node to use.\nreturn [{ json: { query: updateQuery } }];"
+      },
+      "id": "e8b37396-115f-47db-b644-db083041b763",
+      "name": "Prepare Bulk Update Query",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        800,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "cb166514-ce16-45bf-9e22-d796e0b0f323",
+      "name": "Download file",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        360,
+        0
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "V5FSeoqbsp5FBsE9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.namaFile }}",
+        "limit": 2,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "16iieJpaYmibKxhukgGlKFcxcdR1M9tOl",
+            "mode": "list",
+            "cachedResultName": "Daily_sales",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/16iieJpaYmibKxhukgGlKFcxcdR1M9tOl"
+          }
+        },
+        "options": {
+          "fields": [
+            "id",
+            "name"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        140,
+        0
+      ],
+      "id": "ca29f527-57dc-4aa4-a838-4534b07139f5",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "V5FSeoqbsp5FBsE9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        580,
+        0
+      ],
+      "id": "1dc46cec-e5e8-4b13-87f9-75e4b3473572",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.query }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1020,
+        0
+      ],
+      "id": "510fb552-e918-4bfd-85fd-a3f81b50ac05",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "tRq3Te30DMU6ALHv",
+          "name": "amazon-product"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "date"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -300,
+        0
+      ],
+      "id": "31c2c633-12a8-4d8f-936b-37b22e4bc625",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Bulk Update Query": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Prepare Bulk Update Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1bf5015c-243c-40e9-80e2-647aed7529e6",
+  "triggerCount": 0,
+  "tags": []
+}
