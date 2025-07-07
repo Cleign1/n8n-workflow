@@ -1,0 +1,375 @@
+{
+  "createdAt": "2025-07-06T16:25:13.922Z",
+  "updatedAt": "2025-07-07T15:32:43.368Z",
+  "id": "4NIMOtqxwKq0oMnE",
+  "name": "ai_agent_orchestrator",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "authentication": "basicAuth",
+        "options": {
+          "allowedOrigins": "*",
+          "loadPreviousSession": "memory",
+          "responseMode": "responseNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -580,
+        0
+      ],
+      "id": "3270f096-bb34-4984-9a94-543e39d087ea",
+      "name": "When chat message received",
+      "webhookId": "e9df7af1-eb86-4cfe-83f9-c02220ab0bc9",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "VW1skvlf9RhTKiuQ",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful Inventory Management Ai Agent, you are responsible to help Managet Inventory Management using your tools, use the right tool for the right job. After the first question, please introduce yourself briefly"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "c5934680-62b2-4a75-927a-aa5297d570f7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        280,
+        240
+      ],
+      "id": "705bab6d-5aa0-4b50-8e49-d132b8ea3a80",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "fnra6HdsBzeXHUit",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "=call this tool for updating the stock of a product, user must pass a date and then parse it into json format. for Example: \"tolong update untuk tanggal 4 april 2025\". you must return the string \"20250404\", and then you explained that it would pass into a tool that i can use and process the update, and please specify that you will only accept date from 1st april 2025 until 15th april 2025",
+        "workflowId": {
+          "__rl": true,
+          "value": "kzIkLF7hljeez219",
+          "mode": "list",
+          "cachedResultName": "workflow_1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('date', `please return the string of date for example: 4 april 2025 you return as 20250404`, 'string') }}"
+          },
+          "matchingColumns": [
+            "date"
+          ],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        240
+      ],
+      "id": "f8e71581-8968-4b95-a856-5c7209338014",
+      "name": "Update Stok"
+    },
+    {
+      "parameters": {
+        "description": "call this tool when the user is trying to summarize the sales data to be presented, the example instruction is \"tolong buatkan kesimpulan untuk data penjualan yang telah dilakukan\"",
+        "workflowId": {
+          "__rl": true,
+          "value": "wEG9Hn2KjrntbZVF",
+          "mode": "list",
+          "cachedResultName": "ai-agent-3-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        980,
+        240
+      ],
+      "id": "2513557b-563e-4e00-9cc1-13639068ae4b",
+      "name": "Summarize Data"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Makes an HTTP request and returns the response data, please specify the date clearly for example 4th april 2025 converts to \"2025-04-04\" and please tell the user that i'm only available on 4th april untill 15th april 2025",
+        "method": "POST",
+        "url": "http://192.168.1.10:8080/predict-stock",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prediction_date",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `please add the prediction date for the requirement of the api, translate the spesified date from the user input into a format like \"2025-04-04\".`, 'string') }}"
+            },
+            {
+              "name": "request_time",
+              "value": "={{ $now }}"
+            },
+            {
+              "name": "task_id",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', `please add a task id for specifying the filename for the exported file, the name should start with \"prediksi_\" and continued with this javascript \"new Date().getTime();\" which is A number representing the timestamp, in milliseconds, of this date. and then adding it together to make something like \"prediksi_1751899013875\"`, 'string') }}"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        240
+      ],
+      "id": "95701150-b437-484b-b3e1-6ee8c470aa6c",
+      "name": "Golang Prediction"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1ea094f9-d740-4bc4-af7f-d572cf329453",
+              "leftValue": "={{ $json.chatInput }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -200,
+        0
+      ],
+      "id": "9ff7e7d5-68cc-4bde-88e0-96bbec832532",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -480,
+        260
+      ],
+      "id": "be5ca0b5-7ebc-4719-8a2e-b7428ed96e9e",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "ztWffZLko4g9ZKsG",
+          "name": "n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Halo, apakah ada yang bisa saya bantu?",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        20,
+        120
+      ],
+      "id": "3dc20326-8ab2-4100-9c57-58fcdcd6a278",
+      "name": "Tanya Ulang"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        240
+      ],
+      "id": "8708692f-9fb4-41ef-8200-bed96ea5861f",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "CQIWRYG3RRCGzByQ",
+          "name": "supabase"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Stok": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Golang Prediction": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tanya Ulang",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "When chat message received",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c7637d15-a8c5-4154-a7a0-cdf6eb65f586",
+  "triggerCount": 1,
+  "tags": []
+}
